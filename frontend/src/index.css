@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* when show hr in active page*/
+.active hr{
+  @apply block
+}
+
