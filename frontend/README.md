@@ -1,12 +1,49 @@
-# React + Vite
+# Web App Final Project
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 📝 Project Name
 
-Currently, two official plugins are available:
+**MindMeet** – An online platform to connect patients with therapists through virtual appointments.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 👥 Team Members
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+| Name                   | ID       |
+| ---------------------- | -------- |
+| Khin Yadanar Moe       | 6612128  |
+| Nattasasi Nithiworanan | 6610918  |
+| Aye Myat Myat Mon      | U6611944 |
+
+---
+
+## 📖 Project Description
+
+### ✨ Problem It Solves
+
+- Saves time and cost of traveling to clinics.
+- Allows patients to connect with therapists from anywhere.
+- Makes it easier to find therapists and schedule sessions.
+
+### 🧍🏻‍♀️Target Users
+
+- People with limited time who still want regular mental health check-ins.
+- Patients living in remote areas.
+- Busy professionals seeking flexible therapy schedules.
+
+### 🔧 Main Features
+
+- Browse therapists by name and specialization.
+- Add therapists to a favorites list for quick access.
+- Make an appointment with a chosen therapist.
+- Store therapist’s Zoom link for each session.
+- Redirect patients directly to Zoom at appointment time.
+
+---
+
+## 🗄️ Data Models
+
+- Therapist
+- Patient
+- Appointment
+
+---
