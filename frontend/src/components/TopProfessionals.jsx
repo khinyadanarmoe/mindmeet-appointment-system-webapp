@@ -27,7 +27,7 @@ const TopProfessionals = () => {
           >
             <div className="relative overflow-hidden">
               <img
-                className="w-full object-cover bg-blue-50 group-hover:scale-105 transition-transform duration-300"
+                className="w-full object-cover bg-sky-100 group-hover:scale-105 transition-transform duration-300"
                 src={doctor.image}
                 alt={doctor.name}
               />

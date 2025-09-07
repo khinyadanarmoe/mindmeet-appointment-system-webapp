@@ -28,11 +28,9 @@ const Appointment = () => {
   const getAvailableSlots = async () => {
     setDocSlots([]);
 
-    // Getting current date
     let today = new Date();
 
     for (let i = 0; i < 7; i++) {
-      // Getting date with index
       let currentDate = new Date(today);
       currentDate.setDate(today.getDate() + i);
 
@@ -46,11 +44,10 @@ const Appointment = () => {
         currentDate.setHours(
           currentDate.getHours() > 10 ? currentDate.getHours() + 1 : 8
         );
-        currentDate.setMinutes(currentDate.getMinutes() > 30 ? 30 : 0);
       } else {
         currentDate.setHours(8);
-        currentDate.setMinutes(0);
       }
+      currentDate.setMinutes(0);
 
       let timeSlots = [];
 
@@ -78,7 +75,7 @@ const Appointment = () => {
       return;
     }
 
-    // Here you would typically make an API call to book the appointment
+    // make an API call to book the appointment
     alert(
       `Appointment booked with ${docInfo.name} on ${docSlots[
         slotIndex
@@ -120,9 +117,9 @@ const Appointment = () => {
   return (
     <div className="max-w-6xl mx-auto p-6">
       {/* Doctor Info Section */}
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+      <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
         <div className="flex flex-col md:flex-row">
-          <div className="md:w-1/3">
+          <div className="md:w-1/3 bg-sky-100">
             <img
               src={docInfo.image}
               alt={docInfo.name}
@@ -160,7 +157,7 @@ const Appointment = () => {
                 <span className="text-gray-600 font-medium">
                   Consultation Fee:
                 </span>
-                <span className="text-green-600 font-bold text-xl">
+                <span className="text-purple-600 font-bold text-xl">
                   ${docInfo.fees}
                 </span>
               </div>
@@ -178,7 +175,7 @@ const Appointment = () => {
       </div>
 
       {/* Booking Slots Section */}
-      <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
+      <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 border">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
           Available Time Slots
         </h2>
