@@ -60,9 +60,17 @@ export const assets = {
     landing_img
 }
 
+{/*    "Counselor",
+    "Clinical Psychologist",//
+    "Psychiatrist",//
+    "Marriage Therapist",//
+    "Child Psychologist",//
+    "Addiction Counselor",//
+    "Behavioral Therapist", //*/}
+
 export const specialityData = [
   {
-    speciality: 'Psychologist',
+    speciality: 'Clinical Psychologist',
     image: Psychologist
   },
   {
@@ -70,7 +78,7 @@ export const specialityData = [
     image: Psychiatrist
   },
   {
-    speciality: 'Therapist',
+    speciality: 'Behovioral Therapist',
     image: Therapist
   },
   {
@@ -78,12 +86,16 @@ export const specialityData = [
     image: Counselor
   },
   {
-    speciality: 'Family Therapist',
+    speciality: 'Marriage Therapist',
     image: FamilyTherapist
   },
   {
     speciality: 'Child Psychologist',
     image: ChildPsychologist
+  },
+  {
+    speciality: 'Addiction Counselor',
+    image: Therapist
   }
 ]
 

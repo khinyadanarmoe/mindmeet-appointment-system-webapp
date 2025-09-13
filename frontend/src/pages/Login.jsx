@@ -1,8 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
+import { AppContext } from "../context/AppContext";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Login = () => {
+  const { backendUrl, token, setToken } = useContext(AppContext);
+
   const navigate = useNavigate();
   const [state, setState] = useState("Sign Up");
   const [email, setEmail] = useState("");
@@ -20,15 +25,29 @@ const Login = () => {
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       if (state === "Sign Up") {
-        // Handle signup logic
-        console.log("Signup:", { name, email, password });
-        alert("Account created successfully! Please login.");
-        setState("Login");
+        const { data } = await axios.post(`${backendUrl}/api/user/register`, {
+          name,
+          email,
+          password,
+        });
+        if (data.success && data.token) {
+          setToken(data.token);
+          localStorage.setItem("token", data.token);
+        } else {
+          toast.error(data.message || "Registration failed");
+        }
       } else {
-        // Handle login logic
-        console.log("Login:", { email, password });
-        alert("Login successful!");
-        navigate("/");
+        const { data } = await axios.post(`${backendUrl}/api/user/login`, {
+          email,
+          password,
+        });
+        if (data.success && data.token) {
+          setToken(data.token);
+          localStorage.setItem("token", data.token);
+          navigate("/");
+        } else {
+          toast.error(data.message || "Login failed");
+        }
       }
     } catch (error) {
       console.error("Authentication error:", error);
@@ -37,6 +56,12 @@ const Login = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (token) {
+      navigate("/");
+    }
+  }, [token]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex  justify-center py-16">
@@ -269,7 +294,7 @@ const Login = () => {
                 ? "Already have an account?"
                 : "Don't have an account?"}{" "}
               <button
-                type="button"
+                type="submit"
                 onClick={() =>
                   setState(state === "Sign Up" ? "Login" : "Sign Up")
                 }

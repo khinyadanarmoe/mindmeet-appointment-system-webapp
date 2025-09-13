@@ -4,29 +4,31 @@ import { AppContext } from "../context/AppContext";
 import { assets } from "../assets/assets";
 
 const Appointment = () => {
-  const { docId } = useParams();
+  const { therapistId } = useParams();
   const navigate = useNavigate();
-  const { doctors } = useContext(AppContext);
+  const { therapists } = useContext(AppContext);
 
-  const [docInfo, setDoctorInfo] = useState(null);
-  const [docSlots, setDocSlots] = useState([]);
+  const [therapistInfo, setTherapistInfo] = useState(null);
+  const [therapistSlots, setTherapistSlots] = useState([]);
   const [slotIndex, setSlotIndex] = useState(0);
   const [slotTime, setSlotTime] = useState("");
 
   const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
-  const fetchDocInfo = async () => {
-    const docInfo = doctors.find((doc) => doc._id === docId);
-    if (!docInfo) {
-      console.error("No doctor found with ID:", docId);
+  const fetchTherapistInfo = async () => {
+    const therapistInfo = therapists.find(
+      (therapist) => therapist._id === therapistId
+    );
+    if (!therapistInfo) {
+      console.error("No therapist found with ID:", therapistId);
       return;
     }
-    setDoctorInfo(docInfo);
-    console.log("Doctor Info:", docInfo);
+    setTherapistInfo(therapistInfo);
+    console.log("Therapist Info:", therapistInfo);
   };
 
   const getAvailableSlots = async () => {
-    setDocSlots([]);
+    setTherapistSlots([]);
 
     let today = new Date();
 
@@ -51,6 +53,11 @@ const Appointment = () => {
 
       let timeSlots = [];
 
+      // Always add the date info as the first item for display purposes
+      let dateInfo = new Date(today);
+      dateInfo.setDate(today.getDate() + i);
+      dateInfo.setHours(8, 0, 0, 0);
+
       while (currentDate < endTime) {
         let formattedTime = currentDate.toLocaleTimeString([], {
           hour: "2-digit",
@@ -65,7 +72,15 @@ const Appointment = () => {
         currentDate.setHours(currentDate.getHours() + 1);
       }
 
-      setDocSlots((prev) => [...prev, timeSlots]);
+      // If no time slots are available, add just the date info
+      if (timeSlots.length === 0) {
+        timeSlots.push({
+          datetime: dateInfo,
+          time: null, // No time available
+        });
+      }
+
+      setTherapistSlots((prev) => [...prev, timeSlots]);
     }
   };
 
@@ -77,7 +92,7 @@ const Appointment = () => {
 
     // make an API call to book the appointment
     alert(
-      `Appointment booked with ${docInfo.name} on ${docSlots[
+      `Appointment booked with ${therapistInfo.name} on ${therapistSlots[
         slotIndex
       ][0]?.datetime.toDateString()} at ${slotTime}`
     );
@@ -85,16 +100,16 @@ const Appointment = () => {
   };
 
   useEffect(() => {
-    fetchDocInfo();
-  }, [doctors, docId]);
+    fetchTherapistInfo();
+  }, [therapists, therapistId]);
 
   useEffect(() => {
-    if (docInfo) {
+    if (therapistInfo) {
       getAvailableSlots();
     }
-  }, [docInfo]);
+  }, [therapistInfo]);
 
-  if (!docInfo) {
+  if (!therapistInfo) {
     return (
       <div className="max-w-4xl mx-auto p-6 text-center">
         <div className="text-6xl mb-4">🔍</div>
@@ -116,20 +131,20 @@ const Appointment = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      {/* Doctor Info Section */}
+      {/* Therapist Info Section */}
       <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
         <div className="flex flex-col md:flex-row">
           <div className="md:w-1/3 bg-sky-100">
             <img
-              src={docInfo.image}
-              alt={docInfo.name}
+              src={therapistInfo.image}
+              alt={therapistInfo.name}
               className="w-full h-64 md:h-full object-cover"
             />
           </div>
           <div className="md:w-2/3 p-6 md:p-8">
             <div className="flex items-center gap-3 mb-4">
               <h1 className="text-3xl font-bold text-gray-900">
-                {docInfo.name}
+                {therapistInfo.name}
               </h1>
               <img
                 src={assets.verified_icon}
@@ -142,23 +157,25 @@ const Appointment = () => {
               <div className="flex items-center gap-2">
                 <span className="text-gray-600 font-medium">Specialty:</span>
                 <span className="text-purple-600 font-semibold">
-                  {docInfo.speciality}
+                  {therapistInfo.speciality}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-gray-600 font-medium">Degree:</span>
-                <span className="text-gray-800">{docInfo.degree}</span>
+                <span className="text-gray-800">{therapistInfo.degree}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-gray-600 font-medium">Experience:</span>
-                <span className="text-gray-800">{docInfo.experience}</span>
+                <span className="text-gray-800">
+                  {therapistInfo.experience}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-gray-600 font-medium">
                   Consultation Fee:
                 </span>
                 <span className="text-purple-600 font-bold text-xl">
-                  ${docInfo.fees}
+                  ${therapistInfo.fees}
                 </span>
               </div>
             </div>
@@ -166,8 +183,8 @@ const Appointment = () => {
             <div className="bg-gray-50 p-4 rounded-lg">
               <h3 className="font-semibold text-gray-900 mb-2">About</h3>
               <p className="text-gray-700 leading-relaxed">
-                {docInfo.about ||
-                  `${docInfo.name} is a qualified ${docInfo.speciality} with ${docInfo.experience} of experience. Dedicated to providing compassionate and effective mental health care.`}
+                {therapistInfo.about ||
+                  `${therapistInfo.name} is a qualified ${therapistInfo.speciality} with ${therapistInfo.experience} of experience. Dedicated to providing compassionate and effective mental health care.`}
               </p>
             </div>
           </div>
@@ -186,8 +203,8 @@ const Appointment = () => {
             Select Date
           </h3>
           <div className="grid grid-cols-7 gap-2">
-            {docSlots.length &&
-              docSlots.map((item, index) => (
+            {therapistSlots.length &&
+              therapistSlots.map((item, index) => (
                 <div
                   key={index}
                   onClick={() => setSlotIndex(index)}
@@ -214,20 +231,34 @@ const Appointment = () => {
             Select Time
           </h3>
           <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            {docSlots.length &&
-              docSlots[slotIndex].map((item, index) => (
-                <div
-                  key={index}
-                  onClick={() => setSlotTime(item.time)}
-                  className={`text-center py-2 px-3 rounded-lg cursor-pointer text-sm font-medium transition-all ${
-                    item.time === slotTime
-                      ? "bg-purple-500 text-white"
-                      : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                  }`}
-                >
-                  {item.time.toLowerCase()}
+            {therapistSlots.length &&
+              therapistSlots[slotIndex].map((item, index) => {
+                // Skip rendering if this is a date-only item with no time
+                if (!item.time) return null;
+
+                return (
+                  <div
+                    key={index}
+                    onClick={() => setSlotTime(item.time)}
+                    className={`text-center py-2 px-3 rounded-lg cursor-pointer text-sm font-medium transition-all ${
+                      item.time === slotTime
+                        ? "bg-purple-500 text-white"
+                        : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                    }`}
+                  >
+                    {item.time.toLowerCase()}
+                  </div>
+                );
+              })}
+
+            {/* Show message if no time slots available for selected date */}
+            {therapistSlots.length &&
+              therapistSlots[slotIndex].length === 1 &&
+              !therapistSlots[slotIndex][0].time && (
+                <div className="col-span-full text-center py-4 text-gray-500">
+                  No time slots available for this date
                 </div>
-              ))}
+              )}
           </div>
         </div>
 
