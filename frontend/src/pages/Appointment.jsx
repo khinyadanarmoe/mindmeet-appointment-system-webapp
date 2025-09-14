@@ -2,16 +2,18 @@ import React, { useContext, useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { assets } from "../assets/assets";
-
+import { toast } from "react-toastify";
 const Appointment = () => {
   const { therapistId } = useParams();
   const navigate = useNavigate();
-  const { therapists } = useContext(AppContext);
+  const { therapists, bookAppointment, userData, token } =
+    useContext(AppContext);
 
   const [therapistInfo, setTherapistInfo] = useState(null);
   const [therapistSlots, setTherapistSlots] = useState([]);
   const [slotIndex, setSlotIndex] = useState(0);
   const [slotTime, setSlotTime] = useState("");
+  const [isBooking, setIsBooking] = useState(false);
 
   const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
@@ -24,7 +26,7 @@ const Appointment = () => {
       return;
     }
     setTherapistInfo(therapistInfo);
-    console.log("Therapist Info:", therapistInfo);
+    // Remove sensitive therapist info from console logs
   };
 
   const getAvailableSlots = async () => {
@@ -84,19 +86,35 @@ const Appointment = () => {
     }
   };
 
-  const bookAppointment = async () => {
+  const handleBookAppointment = async () => {
+    if (!token) {
+      toast.warn("Please log in to book appointments");
+
+      return navigate("/login");
+    }
+
     if (!slotTime) {
-      alert("Please select a time slot");
+      toast.warn("Select a time slot");
       return;
     }
 
-    // make an API call to book the appointment
-    alert(
-      `Appointment booked with ${therapistInfo.name} on ${therapistSlots[
-        slotIndex
-      ][0]?.datetime.toDateString()} at ${slotTime}`
-    );
-    navigate("/my-appointments");
+    setIsBooking(true);
+
+    try {
+      const selectedDate = therapistSlots[slotIndex][0]?.datetime;
+      const slotDate = selectedDate.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+
+      const success = await bookAppointment(therapistId, slotDate, slotTime);
+
+      if (success) {
+        navigate("/my-appointments");
+      }
+    } catch (error) {
+      console.error("Error booking appointment:", error);
+      toast.error("Failed to book appointment. Please try again.");
+    } finally {
+      setIsBooking(false);
+    }
   };
 
   useEffect(() => {
@@ -265,11 +283,11 @@ const Appointment = () => {
         {/* Book Appointment Button */}
         <div className="text-center">
           <button
-            onClick={bookAppointment}
+            onClick={handleBookAppointment}
             className="bg-purple-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-            disabled={!slotTime}
+            disabled={!slotTime || isBooking}
           >
-            Book an Appointment
+            {isBooking ? "Booking..." : "Book an Appointment"}
           </button>
         </div>
       </div>

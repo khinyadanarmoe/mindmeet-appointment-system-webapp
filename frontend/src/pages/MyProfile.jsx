@@ -1,18 +1,89 @@
 import React from "react";
 import { useState } from "react";
+import { useContext } from "react";
+import { AppContext } from "../context/AppContext";
 import { assets } from "../assets/assets";
+import { toast } from "react-toastify";
 
 const MyProfile = () => {
-  const [userData, setUserData] = useState({
-    name: "John Doe",
-    image: assets.profile_pic,
-    email: "johndoe@gmail.com",
-    phone: "123-456-7890",
-    address: "123 Main St, City, Country",
-    dob: "1990-01-01",
-  });
+  const {
+    userData,
+    setUserData,
+    token,
+    backendUrl,
+    getUserData,
+    updateUserProfile,
+  } = useContext(AppContext);
 
   const [isEditing, setIsEditing] = useState(false);
+  const [image, setImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const updateProfile = async () => {
+    if (
+      !userData.name ||
+      !userData.phone ||
+      !userData.dob ||
+      !userData.gender
+    ) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("name", userData.name);
+      formData.append("phone", userData.phone);
+      formData.append("dob", userData.dob);
+      formData.append("gender", userData.gender);
+
+      if (userData.email) formData.append("email", userData.email);
+      if (userData.address) formData.append("address", userData.address);
+      if (image) formData.append("image", image);
+
+      const success = await updateUserProfile(formData);
+      if (success) {
+        setIsEditing(false);
+        setImage(null);
+        // Refresh user data from server
+        await getUserData();
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error("Failed to update profile");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      // Create preview URL
+      const imageUrl = URL.createObjectURL(file);
+      setUserData((prev) => ({ ...prev, image: imageUrl }));
+    }
+  };
+
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toISOString().split("T")[0];
+  };
+
+  if (!userData) {
+    return (
+      <div className="bg-gradient-to-br from-purple-50 to-blue-50 flex justify-center items-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -31,11 +102,39 @@ const MyProfile = () => {
               <div className="text-center">
                 <div className="relative mb-6">
                   <img
-                    src={userData.image}
+                    src={userData.image || assets.profile_pic}
                     alt="Profile"
                     className="w-48 h-48 lg:w-56 lg:h-56 rounded-full object-cover shadow-2xl border-4 border-white"
                   />
-                  <div className="absolute bottom-2 right-2 bg-green-500 w-6 h-6 rounded-full border-2 border-white"></div>
+                  {isEditing && (
+                    <label
+                      htmlFor="image-upload"
+                      className="absolute bottom-2 right-2 bg-purple-600 hover:bg-purple-700 text-white w-10 h-10 rounded-full flex items-center justify-center cursor-pointer shadow-lg transition-colors"
+                    >
+                      <svg
+                        viewBox="-12 -12 48 48"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M20.9888 4.28491L19.6405 2.93089C18.4045 1.6897 16.4944 1.6897 15.2584 2.93089L13.0112 5.30042L18.7416 11.055L21.1011 8.68547C21.6629 8.1213 22 7.33145 22 6.54161C22 5.75176 21.5506 4.84908 20.9888 4.28491Z"
+                          fill="#f0f2ff"
+                        />
+                        <path
+                          d="M16.2697 10.9422L11.7753 6.42877L2.89888 15.3427C2.33708 15.9069 2 16.6968 2 17.5994V21.0973C2 21.5487 2.33708 22 2.89888 22H6.49438C7.2809 22 8.06742 21.6615 8.74157 21.0973L17.618 12.1834L16.2697 10.9422Z"
+                          fill="#f0f2ff"
+                        />
+                      </svg>
+                    </label>
+                  )}
+
+                  <input
+                    type="file"
+                    id="image-upload"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
                   {userData.name}
@@ -52,6 +151,42 @@ const MyProfile = () => {
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Name */}
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-600">
+                      Full Name *
+                    </label>
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        value={userData.name}
+                        onChange={(e) =>
+                          setUserData({ ...userData, name: e.target.value })
+                        }
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                      />
+                    ) : (
+                      <div className="flex items-center space-x-2">
+                        <svg
+                          className="w-5 h-5 text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                          />
+                        </svg>
+                        <p className="text-gray-800 font-medium">
+                          {userData.name}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
                   {/* Email */}
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-600">
@@ -60,7 +195,7 @@ const MyProfile = () => {
                     {isEditing ? (
                       <input
                         type="email"
-                        value={userData.email}
+                        value={userData.email || ""}
                         onChange={(e) =>
                           setUserData({ ...userData, email: e.target.value })
                         }
@@ -82,7 +217,7 @@ const MyProfile = () => {
                           />
                         </svg>
                         <p className="text-gray-800 font-medium">
-                          {userData.email}
+                          {userData.email || "Not set"}
                         </p>
                       </div>
                     )}
@@ -91,12 +226,12 @@ const MyProfile = () => {
                   {/* Phone */}
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-600">
-                      Phone Number
+                      Phone Number *
                     </label>
                     {isEditing ? (
                       <input
                         type="tel"
-                        value={userData.phone}
+                        value={userData.phone || ""}
                         onChange={(e) =>
                           setUserData({ ...userData, phone: e.target.value })
                         }
@@ -118,7 +253,7 @@ const MyProfile = () => {
                           />
                         </svg>
                         <p className="text-gray-800 font-medium">
-                          {userData.phone}
+                          {userData.phone || "Not set"}
                         </p>
                       </div>
                     )}
@@ -127,12 +262,12 @@ const MyProfile = () => {
                   {/* Date of Birth */}
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-600">
-                      Date of Birth
+                      Date of Birth *
                     </label>
                     {isEditing ? (
                       <input
                         type="date"
-                        value={userData.dob}
+                        value={formatDateForInput(userData.dob)}
                         onChange={(e) =>
                           setUserData({ ...userData, dob: e.target.value })
                         }
@@ -154,7 +289,50 @@ const MyProfile = () => {
                           />
                         </svg>
                         <p className="text-gray-800 font-medium">
-                          {new Date(userData.dob).toLocaleDateString()}
+                          {userData.dob
+                            ? new Date(userData.dob).toLocaleDateString()
+                            : "Not set"}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Gender */}
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-600">
+                      Gender *
+                    </label>
+                    {isEditing ? (
+                      <select
+                        value={userData.gender || "not selected"}
+                        onChange={(e) =>
+                          setUserData({ ...userData, gender: e.target.value })
+                        }
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                      >
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    ) : (
+                      <div className="flex items-center space-x-2">
+                        <svg
+                          className="w-5 h-5 text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                          />
+                        </svg>
+                        <p className="text-gray-800 font-medium">
+                          {userData.gender === "not selected"
+                            ? "Not set"
+                            : userData.gender}
                         </p>
                       </div>
                     )}
@@ -167,11 +345,14 @@ const MyProfile = () => {
                     </label>
                     {isEditing ? (
                       <textarea
-                        value={userData.address}
+                        value={userData.address || ""}
                         onChange={(e) =>
-                          setUserData({ ...userData, address: e.target.value })
+                          setUserData({
+                            ...userData,
+                            address: e.target.value,
+                          })
                         }
-                        rows={3}
+                        rows={2}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
                       />
                     ) : (
@@ -196,7 +377,7 @@ const MyProfile = () => {
                           />
                         </svg>
                         <p className="text-gray-800 font-medium">
-                          {userData.address}
+                          {userData.address || "Not set"}
                         </p>
                       </div>
                     )}
@@ -209,29 +390,44 @@ const MyProfile = () => {
                 {isEditing ? (
                   <div className="flex space-x-3">
                     <button
-                      onClick={() => setIsEditing(false)}
-                      className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                      onClick={() => {
+                        setIsEditing(false);
+                        setImage(null);
+                        getUserData(); // Reset to original data
+                      }}
+                      disabled={isLoading}
+                      className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
                     >
                       Cancel
                     </button>
                     <button
-                      onClick={() => setIsEditing(false)}
-                      className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium flex items-center space-x-2"
+                      onClick={updateProfile}
+                      disabled={isLoading}
+                      className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium flex items-center space-x-2 disabled:opacity-50"
                     >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span>Save Changes</span>
+                      {isLoading ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          <span>Saving...</span>
+                        </>
+                      ) : (
+                        <>
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                          <span>Save Changes</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 ) : (

@@ -11,9 +11,6 @@ const addTherapist = async (req, res) => {
     const {name, email, password, zoomLink, speciality, degree, experience, about, available, fees, address} = req.body;
     const imageFile = req.file;
     
-    console.log("Request body:", req.body);
-    console.log("Uploaded file:", imageFile);
-    
     // Validate required fields
     if (!name || !email || !password || !zoomLink || !speciality || !degree || !experience || !about || !fees || !address) {
       return res.status(400).json({ error: "All fields are required", message: "Missing details" });
@@ -69,13 +66,12 @@ const addTherapist = async (req, res) => {
       address,
     };
 
-    console.log("Therapist data to save:", therapistData);
-
     // Save to database
     const newTherapist = new therapistModel(therapistData);
     const savedTherapist = await newTherapist.save();
 
-    console.log("Therapist saved successfully:", savedTherapist._id);
+    // Log only non-sensitive info
+    console.log("Therapist saved successfully with ID:", savedTherapist._id);
 
     res.status(201).json({ 
       message: "Therapist added successfully",

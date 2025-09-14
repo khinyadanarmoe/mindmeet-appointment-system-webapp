@@ -8,11 +8,11 @@ const TopProfessionals = () => {
   const navigate = useNavigate();
   const { therapists, getTherapistsData } = useContext(AppContext);
 
-  // Debug: Log therapists data
-  useEffect(() => {
-    console.log("TopProfessionals - therapists data:", therapists);
-    console.log("TopProfessionals - therapists length:", therapists?.length);
-  }, [therapists]);
+  // Remove debug logs for production security
+  // useEffect(() => {
+  //   console.log("TopProfessionals - therapists data:", therapists);
+  //   console.log("TopProfessionals - therapists length:", therapists?.length);
+  // }, [therapists]);
 
   // Ensure we have fresh data
   useEffect(() => {
