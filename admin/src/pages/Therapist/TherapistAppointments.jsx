@@ -1,20 +1,20 @@
 import React from "react";
 import { useContext, useState } from "react";
-import { AdminContext } from "../../context/AdminContext";
+import { TherapistContext } from "../../context/TherapistContext";
 import { useEffect } from "react";
 
-const AllAppointments = () => {
-  const { aToken, appointments, getAllAppointments } =
-    useContext(AdminContext) || {};
+const TherapistAppointments = () => {
+  const { dToken, appointments, getAllAppointments } =
+    useContext(TherapistContext) || {};
 
   const [sortOrder, setSortOrder] = useState("asc");
   const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
-    if (aToken) {
+    if (dToken) {
       getAllAppointments();
     }
-  }, [aToken]);
+  }, [dToken]);
 
   const sortAppointmentsByDate = (appointments, order) => {
     if (!appointments) return [];
@@ -57,7 +57,7 @@ const AllAppointments = () => {
   return (
     <div className="p-6">
       <div className="flex flex-col space-y-4 mb-6">
-        <h1 className="text-2xl font-bold">All Appointments</h1>
+        <h1 className="text-2xl font-bold">My Appointments</h1>
 
         {/* Filter and Sort Controls */}
         <div className="flex flex-wrap items-center gap-4">
@@ -116,10 +116,10 @@ const AllAppointments = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {sortedAppointments.map((appointment) => (
+              {sortedAppointments.map((appointment, index) => (
                 <tr key={appointment._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {sortedAppointments.indexOf(appointment) + 1}
+                    {index + 1}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {appointment.userData?.name || "N/A"}
@@ -179,4 +179,4 @@ const AllAppointments = () => {
   );
 };
 
-export default AllAppointments;
+export default TherapistAppointments;

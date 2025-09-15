@@ -3,7 +3,7 @@ import { AppContext } from "../context/AppContext";
 import { useNavigate } from "react-router-dom";
 
 const MyAppointments = () => {
-  const { getUserAppointments } = useContext(AppContext);
+  const { getUserAppointments, cancelAppointment } = useContext(AppContext);
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -47,11 +47,19 @@ const MyAppointments = () => {
   };
 
   // Function to handle appointment cancellation
-  const handleCancel = (appointmentId) => {
+  const handleCancel = async (appointmentId) => {
     if (window.confirm("Are you sure you want to cancel this appointment?")) {
-      setAppointments(appointments.filter((apt) => apt._id !== appointmentId));
-      // TODO: Add API call to cancel appointment on backend
-      alert("Appointment cancelled successfully!");
+      try {
+        const success = await cancelAppointment(appointmentId);
+        if (success) {
+          // Remove the cancelled appointment from the local state
+          setAppointments(
+            appointments.filter((apt) => apt._id !== appointmentId)
+          );
+        }
+      } catch (error) {
+        console.error("Error cancelling appointment:", error);
+      }
     }
   };
 

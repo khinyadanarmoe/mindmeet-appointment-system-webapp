@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { useContext } from "react";
 import { AdminContext } from "../context/AdminContext";
+import { TherapistContext } from "../context/TherapistContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -10,10 +11,24 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { setAToken, backendUrl } = useContext(AdminContext);
+  const { setDToken } = useContext(TherapistContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!email || !password) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
     try {
+      console.log("Attempting login:", {
+        state,
+        email,
+        endpoint:
+          state === "Admin" ? "/api/admin/login" : "/api/therapist/login",
+      });
+
       const endpoint =
         state === "Admin" ? "/api/admin/login" : "/api/therapist/login";
       const response = await axios.post(backendUrl + endpoint, {
@@ -21,16 +36,26 @@ const Login = () => {
         password,
       });
 
-      if (response.data.token) {
+      console.log("Login response:", response.data);
+
+      if (state === "Admin" && response.data.token) {
         setAToken(response.data.token);
         localStorage.setItem("aToken", response.data.token);
+        toast.success("Admin login successful!");
+      } else if (state === "Doctor" && response.data.token) {
+        setDToken(response.data.token);
+        localStorage.setItem("dToken", response.data.token);
+        toast.success("Therapist login successful!");
       } else {
-        toast.error(response.data.message || "Login failed");
+        toast.error(
+          response.data.message || "Login failed - no token received"
+        );
       }
     } catch (error) {
       console.error("Login error:", error);
       toast.error(
         error.response?.data?.error ||
+          error.response?.data?.message ||
           "Login failed. Please check your credentials."
       );
     }

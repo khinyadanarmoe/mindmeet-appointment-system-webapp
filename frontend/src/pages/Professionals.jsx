@@ -2,16 +2,13 @@ import React from "react";
 import { useContext, useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
-import { doctors as fallbackDoctors } from "../assets/assets";
 
 const Professionals = () => {
   const navigate = useNavigate();
   const { speciality } = useParams();
-  const { doctors } = useContext(AppContext) || {};
+  const { therapists, getTherapistsData } = useContext(AppContext) || {};
 
-  const doctorsData = doctors || fallbackDoctors;
-
-  const [filteredDoctors, setFilteredDoctors] = useState(doctorsData);
+  const [filteredTherapists, setFilteredTherapists] = useState([]);
   const [selectedSpeciality, setSelectedSpeciality] = useState(
     speciality || ""
   );
@@ -27,27 +24,26 @@ const Professionals = () => {
 
   const applyFilter = (filterSpeciality) => {
     if (filterSpeciality && filterSpeciality !== "") {
-      const filtered = doctorsData.filter(
-        (doctor) =>
-          doctor.speciality.toLowerCase() === filterSpeciality.toLowerCase()
+      const filtered = therapists.filter(
+        (therapist) =>
+          therapist.speciality.toLowerCase() === filterSpeciality.toLowerCase()
       );
-      setFilteredDoctors(filtered);
+      setFilteredTherapists(filtered);
     } else {
-      setFilteredDoctors(doctorsData);
+      setFilteredTherapists(therapists);
     }
     setSelectedSpeciality(filterSpeciality || "");
   };
 
   useEffect(() => {
-    if (speciality) {
-      applyFilter(speciality);
-    } else {
-      setFilteredDoctors(doctorsData);
+    if (therapists && therapists.length > 0) {
+      if (speciality) {
+        applyFilter(speciality);
+      } else {
+        setFilteredTherapists(therapists);
+      }
     }
-  }, [speciality, doctorsData]);
-
-  console.log("Current speciality:", speciality);
-  console.log("Filtered doctors:", filteredDoctors);
+  }, [speciality, therapists]);
 
   return (
     <div className="flex flex-col gap-8 pt-5 border-t px-4 md:px-20">
@@ -80,21 +76,21 @@ const Professionals = () => {
         </div>
       </div>
 
-      {/* Doctors Grid */}
+      {/* Therapists Grid */}
       <div className="w-full">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-          {filteredDoctors && filteredDoctors.length > 0 ? (
-            filteredDoctors.map((doctor, index) => (
+          {filteredTherapists && filteredTherapists.length > 0 ? (
+            filteredTherapists.map((therapist, index) => (
               <div
-                key={doctor._id}
-                onClick={() => navigate(`/appointment/${doctor._id}`)}
+                key={therapist._id}
+                onClick={() => navigate(`/appointment/${therapist._id}`)}
                 className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-2 border border-gray-100 overflow-hidden group"
               >
                 <div className="relative overflow-hidden">
                   <img
                     className="w-full object-cover bg-blue-50 group-hover:scale-105 transition-transform duration-300"
-                    src={doctor.image}
-                    alt={doctor.name}
+                    src={therapist.image}
+                    alt={therapist.name}
                   />
                 </div>
 
@@ -102,20 +98,24 @@ const Professionals = () => {
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     <p className="text-sm text-green-600 font-medium">
-                      {doctor.speciality}
+                      {therapist.speciality}
                     </p>
                   </div>
 
                   <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-purple-600 transition-colors">
-                    {doctor.name}
+                    {therapist.name}
                   </h3>
 
-                  <p className="text-sm text-gray-600 mb-3">{doctor.degree}</p>
+                  <p className="text-sm text-gray-600 mb-3">
+                    {therapist.degree}
+                  </p>
 
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">{doctor.experience}</span>
+                    <span className="text-gray-500">
+                      {therapist.experience}
+                    </span>
                     <span className="text-lg font-bold text-purple-600">
-                      ${doctor.fees}
+                      ${therapist.fees}
                     </span>
                   </div>
                 </div>

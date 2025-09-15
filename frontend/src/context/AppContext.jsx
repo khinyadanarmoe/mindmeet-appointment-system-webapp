@@ -110,7 +110,6 @@ const AppContextProvider = (props) => {
 
     try {
       const url = `${backendUrl}/api/user/book-appointment`;
-      // Remove sensitive debug logs for production security
 
       const { data } = await axios.post(
         url,
@@ -170,6 +169,40 @@ const AppContextProvider = (props) => {
     }
   };
 
+  const cancelAppointment = async (appointmentId) => {
+    if (!token) {
+      toast.error("Please log in to cancel appointments");
+      return false;
+    }
+
+    try {
+      const url = `${backendUrl}/api/user/cancel-appointment`;
+
+      const { data } = await axios.delete(url, {
+        data: { appointmentId },
+        headers: { token },
+      });
+
+      if (data.success) {
+        toast.success(data.message || "Appointment cancelled successfully");
+        // Refresh therapists data to update booked slots
+        await getTherapistsData();
+        return true;
+      } else {
+        toast.error(data.error || "Failed to cancel appointment");
+        return false;
+      }
+    } catch (error) {
+      console.error("Error cancelling appointment:", error);
+      if (error.response && error.response.data && error.response.data.error) {
+        toast.error(error.response.data.error);
+      } else {
+        toast.error("Failed to cancel appointment");
+      }
+      return false;
+    }
+  };
+
   const value = {
     therapists,
     currencySymbol,
@@ -183,6 +216,7 @@ const AppContextProvider = (props) => {
     updateUserProfile,
     bookAppointment,
     getUserAppointments,
+    cancelAppointment,
   };
 
   return (

@@ -2,6 +2,8 @@ import validator from "validator";
 import bcrypt from "bcrypt";
 import { v2 as cloudinary } from 'cloudinary';
 import therapistModel from "../models/therapistModel.js";
+import appointmentModel from "../models/appointmentModel.js";
+import userModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 import e from "express";
 
@@ -70,9 +72,6 @@ const addTherapist = async (req, res) => {
     const newTherapist = new therapistModel(therapistData);
     const savedTherapist = await newTherapist.save();
 
-    // Log only non-sensitive info
-    console.log("Therapist saved successfully with ID:", savedTherapist._id);
-
     res.status(201).json({ 
       message: "Therapist added successfully",
       therapistId: savedTherapist._id,
@@ -128,11 +127,55 @@ const adminLogin = async (req, res) => {
 const getAllTherapists = async (req, res) => {
   try {
     const therapists = await therapistModel.find({}).select('-password -email -address -zoomLink');
-    res.status(200).json({ therapists });
+    res.status(200).json({ success: true, therapists });
+
   } catch (error) {
     console.error("Error fetching therapists:", error);
-    res.status(500).json({ error: "Failed to fetch therapists", message: error.message });
+    res.status(500).json({ success: false, error: "Failed to fetch therapists", message: error.message });
   }
 };
 
-export { addTherapist, adminLogin, getAllTherapists };
+
+// getting all appointments
+const appointmentsAdmin = async (req, res) => {
+    try {
+        console.log("Admin appointments endpoint called");
+        const appointments = await appointmentModel.find({}).sort({ createdAt: -1 });
+        console.log("Found appointments:", appointments.length);
+        res.status(200).json({ success: true, appointments });
+    } catch (error) {
+        console.log("Error fetching appointments:", error);
+        res.status(500).json({ success: false, message: "Failed to fetch appointments" });
+    }
+};
+
+// api to get dashboard data
+const dashboardData = async (req, res) => {
+  try {
+    const therapistCount = await therapistModel.countDocuments();
+    const userCount = await userModel.countDocuments();
+    const appointmentCount = await appointmentModel.countDocuments();
+    
+    // Get latest 5 appointments without populate since data is embedded
+    const latestAppointments = await appointmentModel.find({})
+      .sort({ createdAt: -1 })
+      .limit(5);
+    
+    res.status(200).json({ 
+      success: true,
+      totalUsers: userCount,
+      totalTherapists: therapistCount, 
+      totalAppointments: appointmentCount,
+      latestAppointments: latestAppointments
+    });
+  } catch (error) {
+    console.error("Error fetching dashboard data:", error);
+    res.status(500).json({ 
+      success: false,
+      error: "Failed to fetch dashboard data", 
+      message: error.message 
+    });
+  }
+};
+
+export { addTherapist, adminLogin, getAllTherapists, appointmentsAdmin , dashboardData};

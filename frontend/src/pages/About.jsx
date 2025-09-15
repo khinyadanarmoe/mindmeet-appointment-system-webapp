@@ -1,5 +1,4 @@
 import React from "react";
-import { assets } from "../assets/assets";
 import doc1 from "../assets/doc1.png";
 import doc2 from "../assets/doc2.png";
 
@@ -9,7 +8,7 @@ const About = () => {
       id="about"
       className="bg-gradient-to-br from-purple-50 to-blue-50 flex  justify-center py-16 relative overflow-hidden"
     >
-      {/* Left Doctor Image */}
+      {/* Left Therapist Image */}
       <div className="absolute bottom-0 left-4 top-1/2 transform -translate-y-1/2 z-10 -ml-16 md:-ml-20">
         <img
           src={doc1}
@@ -18,7 +17,7 @@ const About = () => {
         />
       </div>
 
-      {/* Right Doctor Image */}
+      {/* Right Therapist Image */}
       <div className="absolute bottom-0 right-4 top-1/2 transform -translate-y-1/2 z-10 -mr-16 md:-mr-20">
         <img
           src={doc2}

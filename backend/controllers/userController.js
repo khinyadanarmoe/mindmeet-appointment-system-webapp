@@ -1,10 +1,78 @@
 import validator from "validator";
 import bcrypt from "bcrypt";
+import mongoose from "mongoose";
 import userModel from "../models/userModel.js";
 import therapistModel from "../models/therapistModel.js";
 import appointmentModel from "../models/appointmentModel.js";
 import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
+
+// Helper function to convert time to 24-hour format
+const convertTo24Hour = (timeStr) => {
+  // If it's already in 24-hour format (HH:MM), return as is
+  if (/^\d{1,2}:\d{2}$/.test(timeStr)) {
+    return timeStr.length === 4 ? '0' + timeStr : timeStr; // Add leading zero if needed
+  }
+  
+  // If it's in 12-hour format (HH:MM AM/PM), convert it
+  if (/^\d{1,2}:\d{2}\s?(AM|PM)$/i.test(timeStr)) {
+    const [time, modifier] = timeStr.split(/\s+/);
+    let [hours, minutes] = time.split(':');
+    
+    if (hours === '12') {
+      hours = '00';
+    }
+    
+    if (modifier.toUpperCase() === 'PM') {
+      hours = parseInt(hours, 10) + 12;
+    }
+    
+    return `${hours.toString().padStart(2, '0')}:${minutes}`;
+  }
+  
+  return timeStr; // Return as is if format is not recognized
+};
+
+// Utility function to sync existing appointments with therapist slots_booked
+const syncTherapistSlotsBooked = async () => {
+  try {
+    // Get all active appointments
+    const appointments = await appointmentModel.find({ cancelled: { $ne: true } });
+    
+    // Group appointments by therapist
+    const therapistSlots = {};
+    
+    appointments.forEach(apt => {
+      if (!therapistSlots[apt.therapistId]) {
+        therapistSlots[apt.therapistId] = {};
+      }
+      
+      if (!therapistSlots[apt.therapistId][apt.slotDate]) {
+        therapistSlots[apt.therapistId][apt.slotDate] = [];
+      }
+      
+      // Normalize time format to 24-hour and remove duplicates
+      const normalizedTime = convertTo24Hour(apt.slotTime);
+      if (!therapistSlots[apt.therapistId][apt.slotDate].includes(normalizedTime)) {
+        therapistSlots[apt.therapistId][apt.slotDate].push(normalizedTime);
+      }
+    });
+    
+    // Update each therapist's slots_booked
+    for (const [therapistId, slots] of Object.entries(therapistSlots)) {
+      await therapistModel.findByIdAndUpdate(
+        therapistId,
+        { slots_booked: slots },
+        { new: true }
+      );
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error syncing therapist slots:', error);
+    return false;
+  }
+};
 
 // api to register user
 const registerUser = async (req, res) => {
@@ -184,12 +252,15 @@ const updateUserProfile = async (req, res) => {
 const bookAppointment = async (req, res) => {
   try {
     const userId = req.userId;
-    const { therapistId, slotDate, slotTime } = req.body;
+    let { therapistId, slotDate, slotTime } = req.body;
 
     // Validate required fields
     if (!therapistId || !slotDate || !slotTime) {
       return res.status(400).json({ error: "Therapist ID, slot date, and slot time are required" });
     }
+
+    // Normalize time format to 24-hour format for consistency
+    slotTime = convertTo24Hour(slotTime);
 
     const userData = await userModel.findById(userId).select("-password");
     const therapist = await therapistModel.findById(therapistId);
@@ -232,19 +303,19 @@ const bookAppointment = async (req, res) => {
     }
 
     // Check if the therapist's time slot is already booked by another user
-    let slots_booked = therapist.slots_booked || {};
-    
-    if (slots_booked[slotDate]) {
-        if (slots_booked[slotDate].includes(slotTime)) {
-            return res.status(400).json({ error: "This time slot is already booked" });
-        } else {
-            slots_booked[slotDate].push(slotTime);
-        }
-    } else {
-        slots_booked[slotDate] = [slotTime];
+    // Use atomic operation to prevent race conditions
+    const existingSlotBooking = await appointmentModel.findOne({
+      therapistId,
+      slotDate,
+      slotTime,
+      cancelled: { $ne: true } // Only check non-cancelled appointments
+    });
+
+    if (existingSlotBooking) {
+      return res.status(400).json({ error: "This time slot is already booked by another patient" });
     }
 
-    // Create appointment data
+    // Create appointment data first
     const appointmentData = {
         userId,
         therapistId,
@@ -262,35 +333,78 @@ const bookAppointment = async (req, res) => {
         amount: therapist.fees,
     };
 
-    // Save appointment first
-    const newAppointment = new appointmentModel(appointmentData);
-    await newAppointment.save();
+    // Use atomic operation to save appointment and update therapist slots
+    const session = await mongoose.startSession();
+    
+    try {
+      await session.withTransaction(async () => {
+        // Save appointment first
+        const newAppointment = new appointmentModel(appointmentData);
+        await newAppointment.save({ session });
 
-    // Then update therapist slots_booked
-    therapist.slots_booked = slots_booked;
-    await therapist.save();
+        // Update therapist slots_booked atomically
+        let slots_booked = therapist.slots_booked || {};
+        
+        if (slots_booked[slotDate]) {
+            if (slots_booked[slotDate].includes(slotTime)) {
+                throw new Error("Time slot was just booked by another user");
+            }
+            slots_booked[slotDate].push(slotTime);
+        } else {
+            slots_booked[slotDate] = [slotTime];
+        }
 
-    res.status(200).json({ 
-      success: true,
-      message: "Appointment booked successfully",
-      appointment: newAppointment
-    });
+        // Update therapist with new slots
+        await therapistModel.findByIdAndUpdate(
+          therapistId,
+          { slots_booked: slots_booked },
+          { session, new: true }
+        );
+
+        return newAppointment;
+      });
+
+      res.status(200).json({ 
+        success: true,
+        message: "Appointment booked successfully"
+      });
+
+    } catch (transactionError) {
+      if (transactionError.message.includes("Time slot was just booked")) {
+        return res.status(400).json({ error: "This time slot was just booked by another user. Please select a different time." });
+      }
+      throw transactionError;
+    } finally {
+      await session.endSession();
+    }
 
   } catch (error) {
     console.error("Error booking appointment:", error);
+    
+    // Handle duplicate key error (E11000) from MongoDB unique constraint
+    if (error.code === 11000) {
+      if (error.message.includes('therapistId_1_slotDate_1_slotTime_1')) {
+        return res.status(400).json({ error: "This time slot is already booked by another patient" });
+      } else if (error.message.includes('userId_1_slotDate_1_slotTime_1')) {
+        return res.status(400).json({ error: "You already have an appointment scheduled at this time" });
+      }
+      return res.status(400).json({ error: "This appointment slot is no longer available" });
+    }
+    
     res.status(500).json({ error: "Failed to book appointment", message: error.message });
   }
 };
-
-    // Further logic to book appointment can be added here
 
 // api to get user appointments
 const getUserAppointments = async (req, res) => {
   try {
     const userId = req.userId; // Get from auth middleware
-
-    // Find all appointments for this user
-    const appointments = await appointmentModel.find({ userId }).sort({ createdAt: -1 });
+    
+    // Find all non-cancelled appointments for this user
+    const appointments = await appointmentModel.find({ 
+      userId, 
+      cancelled: { $ne: true } 
+    }).sort({ createdAt: -1 });
 
     res.status(200).json({ 
       success: true,
@@ -303,4 +417,91 @@ const getUserAppointments = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, getUserInfo, updateUserProfile, bookAppointment, getUserAppointments };    
+// Admin utility API to sync therapist slots_booked with existing appointments
+const syncSlotsBooked = async (req, res) => {
+  try {
+    const success = await syncTherapistSlotsBooked();
+    
+    if (success) {
+      res.status(200).json({ 
+        success: true,
+        message: "Therapist slots synchronized successfully"
+      });
+    } else {
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to sync therapist slots"
+      });
+    }
+  } catch (error) {
+    console.error("Error in sync endpoint:", error);
+    res.status(500).json({ 
+      success: false,
+      message: "Failed to sync therapist slots",
+      error: error.message
+    });
+  }
+};
+
+// Cancel appointment
+const cancelAppointment = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { appointmentId } = req.body;
+
+    // Validate required fields
+    if (!appointmentId) {
+      return res.status(400).json({ error: "Appointment ID is required" });
+    }
+
+    const appointment = await appointmentModel.findById(appointmentId);
+    if (!appointment) {
+      return res.status(404).json({ error: "Appointment not found" });
+    }
+
+    if (appointment.userId.toString() !== userId) {
+      return res.status(403).json({ error: "You are not authorized to cancel this appointment" });
+    }
+
+    if (appointment.cancelled) {
+      return res.status(400).json({ error: "Appointment is already cancelled" });
+    }
+
+    // Mark appointment as cancelled
+    appointment.cancelled = true;
+    await appointment.save();
+
+    // Update therapist's slots_booked to remove this slot
+    const therapist = await therapistModel.findById(appointment.therapistId);
+    if (therapist && therapist.slots_booked && therapist.slots_booked[appointment.slotDate]) {
+      // Normalize the appointment time to 24-hour format for consistent comparison
+      const normalizedAppointmentTime = convertTo24Hour(appointment.slotTime);
+      
+      // Filter out the cancelled slot (checking both original and normalized formats)
+      therapist.slots_booked[appointment.slotDate] = therapist.slots_booked[appointment.slotDate].filter(time => {
+        const normalizedSlotTime = convertTo24Hour(time);
+        return normalizedSlotTime !== normalizedAppointmentTime && time !== appointment.slotTime;
+      });
+      
+      // If no more slots on that date, remove the date entry
+      if (therapist.slots_booked[appointment.slotDate].length === 0) {
+        delete therapist.slots_booked[appointment.slotDate];
+      }
+      
+      // Mark the therapist document as modified to ensure the update is saved
+      therapist.markModified('slots_booked');
+      await therapist.save();
+    }
+
+    res.status(200).json({ 
+      success: true,
+      message: "Appointment cancelled successfully"
+    });
+
+  } catch (error) {
+    console.error("Error cancelling appointment:", error);
+    res.status(500).json({ error: "Failed to cancel appointment", message: error.message });
+  }
+};
+
+export { registerUser, loginUser, getUserInfo, updateUserProfile, bookAppointment, getUserAppointments, syncSlotsBooked, cancelAppointment };    

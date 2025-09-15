@@ -1,5 +1,5 @@
 import express from "express";
-import { addTherapist, adminLogin, getAllTherapists } from "../controllers/adminController.js";
+import { addTherapist, adminLogin, appointmentsAdmin, getAllTherapists, dashboardData } from "../controllers/adminController.js";
 import upload from "../middlewares/multer.js";
 import authAdmin from "../middlewares/authAdmin.js";
 import { changeAvailability } from "../controllers/therapistController.js";
@@ -50,6 +50,8 @@ adminRouter.post("/change-availability", (req, res, next) => {
 // Route for admin login
 adminRouter.post("/login", adminLogin);
 
+adminRouter.get("/appointments", authAdmin, appointmentsAdmin); 
+adminRouter.get("/dashboard-data", authAdmin, dashboardData);
 
 
 export default adminRouter;
