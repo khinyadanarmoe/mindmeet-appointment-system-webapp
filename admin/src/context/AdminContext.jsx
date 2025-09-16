@@ -140,6 +140,30 @@ const AdminContextProvider = (props) => {
     }
   };
 
+  // deleting therapist account
+  const deleteTherapistAccount = async (therapistId) => {
+    try {
+      const { data } = await axios.delete(
+        `${backendUrl}/api/admin/delete-therapist/${therapistId}`,
+        {
+          headers: { token: aToken },
+        }
+      );
+
+      if (data.success) {
+        toast.success("Therapist account deleted successfully");
+        return true;
+      } else {
+        toast.error(data.message || "Failed to delete therapist account");
+        return false;
+      }
+    } catch (error) {
+      console.error("Error deleting therapist account:", error);
+      toast.error("Failed to delete therapist account");
+      return false;
+    }
+  };
+
   const value = {
     aToken,
     setAToken,
@@ -154,6 +178,7 @@ const AdminContextProvider = (props) => {
     getDashboardData,
     dashboardData,
     setDashboardData,
+    deleteTherapistAccount,
   };
 
   return (

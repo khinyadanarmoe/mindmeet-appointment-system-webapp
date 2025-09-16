@@ -178,4 +178,41 @@ const dashboardData = async (req, res) => {
   }
 };
 
-export { addTherapist, adminLogin, getAllTherapists, appointmentsAdmin , dashboardData};
+//delete therapist api
+const deleteTherapist = async (req, res) => {
+  try {
+    const { therapistId } = req.params; 
+    
+    if (!therapistId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Therapist ID is required" 
+      });
+    }
+    
+    const therapist = await therapistModel.findById(therapistId);
+    
+    if (!therapist) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Therapist not found" 
+      });
+    }
+    
+    await therapistModel.findByIdAndDelete(therapistId);
+    
+    res.status(200).json({ 
+      success: true, 
+      message: "Therapist deleted successfully" 
+    });
+
+  } catch (error) {
+    console.error("Error deleting therapist:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Failed to delete therapist" 
+    });
+  }
+};
+
+export { addTherapist, adminLogin, getAllTherapists, appointmentsAdmin , dashboardData, deleteTherapist };

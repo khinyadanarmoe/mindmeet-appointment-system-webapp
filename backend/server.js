@@ -16,9 +16,14 @@ connectDB();
 connectCloudinary();
 
 // Middleware
-
 app.use(express.json());
 app.use(cors());
+
+// Debug middleware to log all requests
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.path} - ${new Date().toISOString()}`);
+    next();
+});
 
 // api endpoints
 app.use('/api/admin', adminRouter);

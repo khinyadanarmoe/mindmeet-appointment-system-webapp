@@ -65,8 +65,9 @@ const TherapistDashboard = () => {
       // Count completed appointments
       if (appointment.isCompleted) {
         completedCount++;
-        totalEarnings += appointment.amount || 0;
       }
+
+      totalEarnings += appointment.amount || 0;
 
       // Count cancelled appointments
       if (appointment.cancelled) {
@@ -162,19 +163,19 @@ const TherapistDashboard = () => {
 
   return (
     <div className="flex-1 bg-gradient-to-br from-purple-50 to-blue-50 min-h-screen">
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-5xl mx-auto px-8 py-16">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <div className="mb-10">
+          <h2 className="text-3xl md:text-4xl font-bold text-purple-900 mb-2">
             Welcome back, {therapistProfile?.name || "Therapist"}!
-          </h1>
+          </h2>
           <p className="text-gray-600">
             Here's what's happening with your practice today.
           </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           {/* Today's Appointments */}
           <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
             <div className="flex items-center justify-between">
@@ -293,7 +294,7 @@ const TherapistDashboard = () => {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Recent Appointments */}
           <div className="lg:col-span-2 bg-white rounded-xl shadow-lg">
             <div className="p-6 border-b border-gray-200">

@@ -104,7 +104,7 @@ const therapistList = async (req, res) => {
 // get appointments for a therapist
 const getTherapistAppointents = async (req, res) => {
   try {
-    const therapistId = req.therapist.id; // Assuming the therapist ID is stored in req.therapist after authentication
+    const therapistId = req.therapist.id; 
     const appointments = await appointmentModel.find({ therapistId: therapistId }).populate('userId', '-password -email -address');
     
     res.status(200).json({ 
@@ -193,6 +193,7 @@ const updateTherapistProfile = async (req, res) => {
     });
   }
 };
+
 
 
 
