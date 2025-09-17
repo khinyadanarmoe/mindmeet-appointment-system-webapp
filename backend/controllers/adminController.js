@@ -63,7 +63,7 @@ const addTherapist = async (req, res) => {
       experience,
       image: imageUrl,
       about,
-      available: available === 'true' || available === true, // Handle string/boolean conversion
+      available: available === 'true' || available === true || available === undefined ? true : false, // Default to true if not provided
       fees: Number(fees),
       address,
     };

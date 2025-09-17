@@ -504,4 +504,20 @@ const cancelAppointment = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, getUserInfo, updateUserProfile, bookAppointment, getUserAppointments, syncSlotsBooked, cancelAppointment };    
+// GET /api/therapists?speciality=SpecialityName
+const getTherapists = async (req, res) => {
+  try {
+    const { speciality } = req.query;
+    let filter = {};
+    if (speciality) {
+      filter.speciality = speciality;
+    }
+    const therapists = await therapistModel.find(filter).select('-password -email -address -zoomLink');
+    res.status(200).json({ success: true, therapists });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch therapists", message: error.message });
+  }
+};
+
+
+export { registerUser, loginUser, getUserInfo, updateUserProfile, bookAppointment, getUserAppointments, syncSlotsBooked, cancelAppointment, getTherapists };

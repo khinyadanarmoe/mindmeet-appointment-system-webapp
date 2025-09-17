@@ -2,7 +2,7 @@ import React from "react";
 import { useContext } from "react";
 import { AdminContext } from "../context/AdminContext";
 import { NavLink, useNavigate } from "react-router-dom";
-import { assets } from "../assets/assets";
+import { assets } from "../../../admin-nextjs/public/assets/assets";
 import { TherapistContext } from "../context/TherapistContext";
 
 const Sidebar = () => {

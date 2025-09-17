@@ -10,7 +10,7 @@ const therapistSchema = new mongoose.Schema({
   experience: { type: String, required: true },
   image: { type: String }, 
   about: { type: String },
-  available: { type: Boolean, required: true   },  
+  available: { type: Boolean, required: true, default: true },  
   fees: { type: Number, required: true },
   address: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },

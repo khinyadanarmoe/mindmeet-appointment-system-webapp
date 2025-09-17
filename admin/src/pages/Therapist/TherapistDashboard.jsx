@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { TherapistContext } from "../../context/TherapistContext";
-import { assets } from "../../assets/assets";
+import { assets } from "../../../../admin-nextjs/public/assets/assets";
 
 const TherapistDashboard = () => {
   const {
