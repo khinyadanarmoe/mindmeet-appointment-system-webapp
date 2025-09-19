@@ -13,8 +13,6 @@ const appointmentSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
 });
 
-// Add compound unique index to prevent duplicate bookings for the same therapist at the same time
-// Only applies to non-cancelled appointments
 appointmentSchema.index(
     { therapistId: 1, slotDate: 1, slotTime: 1 },
     { 
