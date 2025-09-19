@@ -8,11 +8,11 @@
 
 ## 👥 Team Members
 
-| Name                   | ID       |
-| ---------------------- | -------- |
-| Khin Yadanar Moe       | 6612128  |
-| Nattasasi Nithiworanan | 6610918  |
-| Aye Myat Myat Mon      | U6611944 |
+| Name                   | Repo                                                                 |
+| ---------------------- | -------------------------------------------------------------------- |
+| Khin Yadanar Moe       | https://github.com/khinyadanarmoe/mindmeet-appointment-system-webapp |
+| Nattasasi Nithiworanan | https://github.com/Nattasasi (Deployment)                            |
+| Aye Myat Myat Mon      | https://github.com/a-mmmon (UIUX design)                             |
 
 ---
 
@@ -40,10 +40,70 @@
 
 ---
 
-## 🗄️ Data Models
+### 🗄️ Data Models
 
 - Therapist
 - Patient
 - Appointment
 
 ---
+
+## 🖼️ Screenshots
+
+### 🏠 User Frontend
+
+#### Landing Page
+
+![Landing Page](/screenshots/frontend/fe_landing.png)
+
+#### Top Professionals
+
+![Top Professionals](/screenshots/frontend/fe_top_professionals.png)
+
+#### All Professionals
+
+![All Professionals](/screenshots/frontend/fe_all_professionals.png)
+
+#### Book Appointment
+
+![Book Appointment](/screenshots/frontend/fe_appt.png)
+
+#### My Appointments
+
+![My Appointments](/screenshots/frontend/fe_my_appt.png)
+
+#### My Profile
+
+![My Profile](/screenshots/frontend/fe_my_profile.png)
+
+---
+
+### 👩‍⚕️ Therapist Portal
+
+#### Dashboard
+
+![Therapist Dashboard](/screenshots/therapist/dashboard.png)
+
+#### All Appointments
+
+![All Appointments](/screenshots/therapist/all_appt.png)
+
+#### Therapist Profile
+
+![Therapist Profile](/screenshots/therapist/profile.png)
+
+---
+
+### 👨‍💼 Admin Panel
+
+#### Dashboard
+
+![Admin Dashboard](/screenshots/admin/dashboard.png)
+
+#### All Appointments
+
+![Admin Appointments](/screenshots/admin/all_appt.png)
+
+#### Therapist Management
+
+![Therapist Management](/screenshots/admin/therapist_management.png)
