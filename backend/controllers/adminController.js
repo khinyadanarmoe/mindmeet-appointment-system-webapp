@@ -140,6 +140,16 @@ const getAllTherapists = async (req, res) => {
 const appointmentsAdmin = async (req, res) => {
     try {
         console.log("Admin appointments endpoint called");
+        
+        // Import utility function to update appointment statuses
+        const { updateAppointmentStatuses } = await import('../utils/appointmentUtils.js');
+        
+        // Auto-update completed appointments before returning results
+        const updatedCount = await updateAppointmentStatuses(appointmentModel);
+        if (updatedCount > 0) {
+            console.log(`Auto-updated ${updatedCount} appointments to completed status`);
+        }
+        
         const appointments = await appointmentModel.find({}).sort({ createdAt: -1 });
         console.log("Found appointments:", appointments.length);
         res.status(200).json({ success: true, appointments });
@@ -215,4 +225,48 @@ const deleteTherapist = async (req, res) => {
   }
 };
 
-export { addTherapist, adminLogin, getAllTherapists, appointmentsAdmin , dashboardData, deleteTherapist };
+// API endpoint for admin to mark any appointment as completed
+const markAppointmentCompleted = async (req, res) => {
+  try {
+    const { appointmentId } = req.body;
+    
+    if (!appointmentId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Appointment ID is required" 
+      });
+    }
+    
+    // Find the appointment
+    const appointment = await appointmentModel.findById(appointmentId);
+    
+    if (!appointment) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Appointment not found" 
+      });
+    }
+    
+    // Update the appointment to mark it as completed
+    const updatedAppointment = await appointmentModel.findByIdAndUpdate(
+      appointmentId,
+      { isCompleted: true },
+      { new: true }
+    );
+    
+    res.status(200).json({    
+      success: true, 
+      message: "Appointment marked as completed",
+      appointment: updatedAppointment
+    });
+    
+  } catch (error) {
+    console.error("Error marking appointment as completed:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Failed to mark appointment as completed" 
+    });
+  }
+};
+
+export { addTherapist, adminLogin, getAllTherapists, appointmentsAdmin, dashboardData, deleteTherapist, markAppointmentCompleted };

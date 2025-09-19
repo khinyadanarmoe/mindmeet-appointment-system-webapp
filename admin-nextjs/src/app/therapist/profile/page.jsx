@@ -30,6 +30,7 @@ const TherapistProfile = () => {
 
   useEffect(() => {
     if (therapistProfile) {
+      console.log("Therapist Profile Data:", therapistProfile);
       setFormData({
         about: therapistProfile.about || "",
         address: therapistProfile.address || "",
@@ -61,9 +62,10 @@ const TherapistProfile = () => {
 
     try {
       const formDataToSend = new FormData();
+
+      // Only add non-empty values
       Object.keys(formData).forEach((key) => {
-        if (key !== "image") {
-          // Don't append the preview URL
+        if (key !== "image" && formData[key]) {
           formDataToSend.append(key, formData[key]);
         }
       });
@@ -184,6 +186,10 @@ const TherapistProfile = () => {
                       </label>
                       <p className="text-gray-800 font-medium">
                         {therapistProfile.email}
+                      </p>
+                      {/* Debug information - remove in production */}
+                      <p className="text-xs text-gray-400 mt-1">
+                        Email value: {JSON.stringify(therapistProfile.email)}
                       </p>
                     </div>
 
@@ -306,16 +312,11 @@ const TherapistProfile = () => {
                       onClick={() => {
                         setIsEditing(false);
                         setImage(null);
-                        // Reset form data to original
+                        // Reset form data to original (only editable fields)
                         setFormData({
-                          name: therapistProfile.name || "",
-                          email: therapistProfile.email || "",
-                          speciality: therapistProfile.speciality || "",
-                          degree: therapistProfile.degree || "",
-                          experience: therapistProfile.experience || "",
                           about: therapistProfile.about || "",
-                          fees: therapistProfile.fees || "",
                           address: therapistProfile.address || "",
+                          zoomLink: therapistProfile.zoomLink || "",
                         });
                       }}
                       disabled={isLoading}

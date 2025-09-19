@@ -4,7 +4,7 @@ import React from "react";
 import { useState } from "react";
 import { useContext } from "react";
 import { AppContext } from "../../contexts/AppContext";
-import { assets } from "../../assets/assets";
+import { assets } from "../assets/assets";
 import { toast } from "react-toastify";
 import Image from "next/image";
 
@@ -116,7 +116,7 @@ const MyProfile = () => {
                       htmlFor="image-upload"
                       className="absolute bottom-2 right-2 bg-purple-600 hover:bg-purple-700 text-white w-10 h-10 rounded-full flex items-center justify-center cursor-pointer shadow-lg transition-colors"
                     >
-                      <i className="bi bi-camera text-lg"></i>
+                      <i className="bi bi-pencil"></i>
                     </label>
                   )}
 

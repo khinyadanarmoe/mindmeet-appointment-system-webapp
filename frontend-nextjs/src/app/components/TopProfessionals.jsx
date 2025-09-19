@@ -61,9 +61,7 @@ const TopProfessionals = () => {
                 <p className="text-sm text-gray-600 mb-3">{therapist.degree}</p>
 
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">
-                    {therapist.experience} years
-                  </span>
+                  <span className="text-gray-500">{therapist.experience}</span>
                   <span className="text-lg font-bold text-purple-600">
                     ${therapist.fees}
                   </span>

@@ -2,7 +2,7 @@
 
 import React, { useState, useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { assets } from "../../assets/assets";
+import { assets } from "../assets/assets";
 import { AppContext } from "../../contexts/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";

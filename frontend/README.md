@@ -1,49 +1,36 @@
-# Web App Final Project
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## 📝 Project Name
+## Getting Started
 
-**MindMeet** – An online platform to connect patients with therapists through virtual appointments.
+First, run the development server:
 
----
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-## 👥 Team Members
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-| Name                   | ID       |
-| ---------------------- | -------- |
-| Khin Yadanar Moe       | 6612128  |
-| Nattasasi Nithiworanan | 6610918  |
-| Aye Myat Myat Mon      | U6611944 |
+You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
----
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## 📖 Project Description
+## Learn More
 
-### ✨ Problem It Solves
+To learn more about Next.js, take a look at the following resources:
 
-- Saves time and cost of traveling to clinics.
-- Allows patients to connect with therapists from anywhere.
-- Makes it easier to find therapists and schedule sessions.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-### 🧍🏻‍♀️Target Users
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-- People with limited time who still want regular mental health check-ins.
-- Patients living in remote areas.
-- Busy professionals seeking flexible therapy schedules.
+## Deploy on Vercel
 
-### 🔧 Main Features
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-- Browse therapists by name and specialization.
-- Add therapists to a favorites list for quick access.
-- Make an appointment with a chosen therapist.
-- Store therapist’s Zoom link for each session.
-- Redirect patients directly to Zoom at appointment time.
-
----
-
-## 🗄️ Data Models
-
-- Therapist
-- Patient
-- Appointment
-
----
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

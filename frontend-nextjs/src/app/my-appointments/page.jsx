@@ -121,6 +121,12 @@ const MyAppointments = () => {
             <p className="text-gray-500 mb-6">
               You haven't booked any appointments yet.
             </p>
+            <button
+              onClick={() => router.push("/professionals")}
+              className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-full font-medium transition-all duration-300"
+            >
+              Book Your First Appointment
+            </button>
           </div>
         ) : (
           <div className="space-y-6">

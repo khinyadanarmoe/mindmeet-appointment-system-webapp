@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { assets } from "../../assets/assets";
+import { assets } from "../assets/assets";
 import Image from "next/image";
 
 export default function About() {
@@ -66,7 +66,7 @@ export default function About() {
 
             {/* Learn more about our team */}
             <div className="mt-8">
-              <h3 className="text-lg font-semibold mb-3">Developed By</h3>
+              <h3 className="text-lg font-semibold mb-3">Our Team</h3>
               <p className="text-gray-600 mb-4">
                 Khin Yadanar Moe - 6612128, Natassasi Nithinoranan - 6610918,
                 Aye Myat Myat Mon - 6611944

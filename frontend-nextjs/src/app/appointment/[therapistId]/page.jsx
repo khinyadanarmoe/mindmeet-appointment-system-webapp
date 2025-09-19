@@ -3,6 +3,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { AppContext } from "../../../contexts/AppContext";
+import { assets } from "../../assets/assets";
 import { toast } from "react-toastify";
 import Image from "next/image";
 

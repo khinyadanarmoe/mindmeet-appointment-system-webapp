@@ -400,6 +400,12 @@ const getUserAppointments = async (req, res) => {
   try {
     const userId = req.userId; // Get from auth middleware
     
+    // Import utility function to update appointment statuses
+    const { updateAppointmentStatuses } = await import('../utils/appointmentUtils.js');
+    
+    // Auto-update completed appointments before returning results
+    await updateAppointmentStatuses(appointmentModel);
+    
     // Find all non-cancelled appointments for this user
     const appointments = await appointmentModel.find({ 
       userId, 
@@ -519,5 +525,39 @@ const getTherapists = async (req, res) => {
   }
 };
 
+// Mark appointment as completed for user
+const markAppointmentCompleted = async (req, res) => {
+  try {
+    const userId = req.userId; // User ID from auth middleware
+    const { appointmentId } = req.body;
+    
+    if (!appointmentId) {
+      return res.status(400).json({ error: "Appointment ID is required" });
+    }
+    
+    // Ensure the appointment belongs to the user
+    const appointment = await appointmentModel.findOne({
+      _id: appointmentId,
+      userId: userId
+    });
+    
+    if (!appointment) {
+      return res.status(404).json({ error: "Appointment not found or not associated with your account" });
+    }
+    
+    // Update the appointment status
+    await appointmentModel.findByIdAndUpdate(appointmentId, { isCompleted: true });
+    
+    res.status(200).json({ 
+      success: true,
+      message: "Appointment marked as completed"
+    });
+    
+  } catch (error) {
+    console.error("Error marking appointment as completed:", error);
+    res.status(500).json({ error: "Failed to mark appointment as completed", message: error.message });
+  }
+};
 
-export { registerUser, loginUser, getUserInfo, updateUserProfile, bookAppointment, getUserAppointments, syncSlotsBooked, cancelAppointment, getTherapists };
+
+export { registerUser, loginUser, getUserInfo, updateUserProfile, bookAppointment, getUserAppointments, syncSlotsBooked, cancelAppointment, getTherapists, markAppointmentCompleted };

@@ -37,4 +37,4 @@ app.get('/',(req, res) => {
 
 
 
-app.listen(PORT, () => console.log('server started at', PORT))
+app.listen(PORT, () => console.log('server started at', PORT));

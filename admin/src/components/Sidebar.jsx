@@ -1,21 +1,26 @@
+"use client";
+
 import React from "react";
 import { useContext } from "react";
-import { AdminContext } from "../context/AdminContext";
-import { NavLink, useNavigate } from "react-router-dom";
-import { assets } from "../../../admin-nextjs/public/assets/assets";
-import { TherapistContext } from "../context/TherapistContext";
+import { AdminContext } from "../contexts/AdminContext.jsx";
+import Link from "next/link";
+import Image from "next/image.js";
+import { usePathname, useRouter } from "next/navigation";
+import { assets } from "../assets/assets.js";
+import { TherapistContext } from "../contexts/TherapistContext.jsx";
 
 const Sidebar = () => {
   const { aToken, setAToken } = useContext(AdminContext);
   const { dToken, setDToken } = useContext(TherapistContext);
-  const navigate = useNavigate();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const logout = () => {
     setAToken("");
     setDToken("");
     localStorage.removeItem("aToken");
     localStorage.removeItem("dToken");
-    navigate("/login");
+    router.push("/login");
   };
 
   return (
@@ -24,10 +29,12 @@ const Sidebar = () => {
         <>
           {/* Logo Section */}
           <div className="flex flex-row p-6 border-b border-gray-200 ">
-            <img
+            <Image
               src={assets.admin_logo}
               alt="Admin Logo"
               className="h-10 w-auto"
+              width={120}
+              height={40}
             />
             <p className="mt-5 text-gray-600 text-xs px-2.5 py-0.5 rounded-full border">
               Admin
@@ -38,63 +45,63 @@ const Sidebar = () => {
           <nav className=" px-4 py-6">
             <ul className="space-y-2">
               <li>
-                <NavLink
-                  to="/dashboard"
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${
-                      isActive
-                        ? "bg-purple-100 text-purple-700 border-r-4 border-purple-700"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                    }`
-                  }
+                <Link
+                  href="/admin/dashboard"
+                  className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${
+                    pathname === "/admin/dashboard"
+                      ? "bg-purple-100 text-purple-700 border-r-4 border-purple-700"
+                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                  }`}
                 >
-                  <img
+                  <Image
                     src={assets.home_icon}
                     alt="Dashboard"
                     className="h-5 w-5"
+                    width={20}
+                    height={20}
                   />
                   Dashboard
-                </NavLink>
+                </Link>
               </li>
 
               <li>
-                <NavLink
-                  to="/therapist-management"
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${
-                      isActive
-                        ? "bg-purple-100 text-purple-700 border-r-4 border-purple-700 "
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                    }`
-                  }
+                <Link
+                  href="/admin/therapists"
+                  className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${
+                    pathname === "/admin/therapists"
+                      ? "bg-purple-100 text-purple-700 border-r-4 border-purple-700 "
+                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                  }`}
                 >
-                  <img
+                  <Image
                     src={assets.people_icon}
                     alt="Therapist Management"
                     className="h-5 w-5"
+                    width={20}
+                    height={20}
                   />
                   Therapist Management
-                </NavLink>
+                </Link>
               </li>
 
               <li>
-                <NavLink
-                  to="/all-appointments"
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${
-                      isActive
-                        ? "bg-purple-100 text-purple-700 border-r-4 border-b-2 border-purple-700"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 border-b border-gray-200 "
-                    }`
-                  }
+                <Link
+                  href="/admin/appointments"
+                  className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${
+                    pathname === "/admin/appointments"
+                      ? "bg-purple-100 text-purple-700 border-r-4 border-b-2 border-purple-700"
+                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 border-b border-gray-200 "
+                  }`}
                 >
-                  <img
+                  <Image
                     src={assets.appointment_icon}
                     alt="All Appointments"
                     className="h-5 w-5"
+                    width={20}
+                    height={20}
                   />
                   All Appointments
-                </NavLink>
+                </Link>
               </li>
             </ul>
           </nav>
@@ -130,10 +137,12 @@ const Sidebar = () => {
         <>
           {/* Logo Section */}
           <div className="flex flex-row p-6 border-b border-gray-200">
-            <img
+            <Image
               src={assets.admin_logo}
               alt="Therapist Logo"
               className="h-10 w-auto"
+              width={120}
+              height={40}
             />
             <p className="mt-5 text-gray-600 text-xs px-2.5 py-0.5 rounded-full border">
               Therapist
@@ -144,63 +153,63 @@ const Sidebar = () => {
           <nav className="px-4 py-6">
             <ul className="space-y-2">
               <li>
-                <NavLink
-                  to="/therapist-dashboard"
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${
-                      isActive
-                        ? "bg-purple-100 text-purple-700 border-r-4 border-purple-700"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                    }`
-                  }
+                <Link
+                  href="/therapist/dashboard"
+                  className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${
+                    pathname === "/therapist/dashboard"
+                      ? "bg-purple-100 text-purple-700 border-r-4 border-purple-700"
+                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                  }`}
                 >
-                  <img
+                  <Image
                     src={assets.home_icon}
                     alt="Dashboard"
                     className="h-5 w-5"
+                    width={20}
+                    height={20}
                   />
                   Dashboard
-                </NavLink>
+                </Link>
               </li>
 
               <li>
-                <NavLink
-                  to="/therapist-appointments"
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${
-                      isActive
-                        ? "bg-purple-100 text-purple-700 border-r-4 border-purple-700"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                    }`
-                  }
+                <Link
+                  href="/therapist/appointments"
+                  className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${
+                    pathname === "/therapist/appointments"
+                      ? "bg-purple-100 text-purple-700 border-r-4 border-purple-700"
+                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                  }`}
                 >
-                  <img
+                  <Image
                     src={assets.appointment_icon}
                     alt="My Appointments"
                     className="h-5 w-5"
+                    width={20}
+                    height={20}
                   />
                   My Appointments
-                </NavLink>
+                </Link>
               </li>
 
               <li>
-                <NavLink
-                  to="/therapist-profile"
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${
-                      isActive
-                        ? "bg-purple-100 text-purple-700 border-r-4 border-b-2 border-purple-700"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                    }`
-                  }
+                <Link
+                  href="/therapist/profile"
+                  className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${
+                    pathname === "/therapist/profile"
+                      ? "bg-purple-100 text-purple-700 border-r-4 border-b-2 border-purple-700"
+                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                  }`}
                 >
-                  <img
+                  <Image
                     src={assets.people_icon}
                     alt="My Profile"
                     className="h-5 w-5"
+                    width={20}
+                    height={20}
                   />
                   My Profile
-                </NavLink>
+                </Link>
               </li>
             </ul>
           </nav>

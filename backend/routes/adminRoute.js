@@ -1,5 +1,5 @@
 import express from "express";
-import { addTherapist, adminLogin, appointmentsAdmin, getAllTherapists, dashboardData, deleteTherapist } from "../controllers/adminController.js";
+import { addTherapist, adminLogin, appointmentsAdmin, getAllTherapists, dashboardData, deleteTherapist, markAppointmentCompleted } from "../controllers/adminController.js";
 import upload from "../middlewares/multer.js";
 import authAdmin from "../middlewares/authAdmin.js";
 import { changeAvailability } from "../controllers/therapistController.js";
@@ -26,5 +26,8 @@ adminRouter.get("/dashboard-data", authAdmin, dashboardData);
 
 // Route to delete a therapist
 adminRouter.delete("/delete-therapist/:therapistId", authAdmin, deleteTherapist);
+
+// Route to mark an appointment as completed
+adminRouter.post("/mark-appointment-completed", authAdmin, markAppointmentCompleted);
 
 export default adminRouter;

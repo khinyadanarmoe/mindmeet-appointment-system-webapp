@@ -104,7 +104,14 @@ const therapistList = async (req, res) => {
 // get appointments for a therapist
 const getTherapistAppointents = async (req, res) => {
   try {
-    const therapistId = req.therapist.id; 
+    const therapistId = req.therapist.id;
+    
+    // Import utility function to update appointment statuses
+    const { updateAppointmentStatuses } = await import('../utils/appointmentUtils.js');
+    
+    // Auto-update completed appointments before returning results
+    await updateAppointmentStatuses(appointmentModel);
+    
     const appointments = await appointmentModel.find({ therapistId: therapistId }).populate('userId', '-password -email -address');
     
     res.status(200).json({ 
@@ -124,8 +131,9 @@ const getTherapistAppointents = async (req, res) => {
 // therapist profile api
 const getTherapistProfile = async (req, res) => {
   try {
-    const therapistId = req.therapist.id; // Assuming the therapist ID is stored in req.therapist after authentication
-    const therapist = await therapistModel.findById(therapistId).select('-password -email -address');
+    const therapistId = req.therapist.id;
+
+    const therapist = await therapistModel.findById(therapistId).select('-password');
     
     if (!therapist) {
       return res.status(404).json({ 
@@ -134,9 +142,19 @@ const getTherapistProfile = async (req, res) => {
       });
     }
     
+ 
+    const therapistData = therapist.toObject();
+    
+    // Log email value for debugging
+    console.log(`Therapist ${therapistId} email:`, therapist.email);
+    
     res.status(200).json({    
       success: true, 
-      therapist 
+      therapist: {
+        ...therapistData,
+        // Explicitly include email to ensure it's not missing
+        email: therapist.email || "" // Provide empty string fallback
+      }
     });
   } catch (error) {
     console.error("Error fetching therapist profile:", error);
@@ -153,13 +171,14 @@ const getTherapistProfile = async (req, res) => {
 const updateTherapistProfile = async (req, res) => {
   try {
     const therapistId = req.therapist.id;
-    const { about, zoomLink, available } = req.body;
+    const { about, zoomLink, address, available } = req.body;
     
     const updateData = {};
     
     // Only allow updating these specific fields
     if (about !== undefined) updateData.about = about;
     if (zoomLink !== undefined) updateData.zoomLink = zoomLink;
+    if (address !== undefined) updateData.address = address;
     if (available !== undefined) updateData.available = available === 'true' || available === true;
     
     // Handle image upload if provided
@@ -171,7 +190,7 @@ const updateTherapistProfile = async (req, res) => {
       therapistId, 
       updateData, 
       { new: true }
-    ).select('-password -email -address');
+    ).select('-password');
     
     if (!updatedTherapist) {
       return res.status(404).json({ 
@@ -194,7 +213,55 @@ const updateTherapistProfile = async (req, res) => {
   }
 };
 
+// API endpoint to mark appointment as completed
+const markAppointmentCompleted = async (req, res) => {
+  try {
+    const therapistId = req.therapist.id;
+    const { appointmentId } = req.body;
+    
+    if (!appointmentId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Appointment ID is required" 
+      });
+    }
+    
+    // Find the appointment and ensure it belongs to this therapist
+    const appointment = await appointmentModel.findOne({
+      _id: appointmentId,
+      therapistId: therapistId
+    });
+    
+    if (!appointment) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Appointment not found or not associated with this therapist" 
+      });
+    }
+    
+    // Update the appointment to mark it as completed
+    const updatedAppointment = await appointmentModel.findByIdAndUpdate(
+      appointmentId,
+      { isCompleted: true },
+      { new: true }
+    );
+    
+    res.status(200).json({    
+      success: true, 
+      message: "Appointment marked as completed",
+      appointment: updatedAppointment
+    });
+    
+  } catch (error) {
+    console.error("Error marking appointment as completed:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Failed to mark appointment as completed" 
+    });
+  }
+};
 
 
 
-export { changeAvailability, therapistList, therapistLogin, getTherapistAppointents, getTherapistProfile, updateTherapistProfile };
+
+export { changeAvailability, therapistList, therapistLogin, getTherapistAppointents, getTherapistProfile, updateTherapistProfile, markAppointmentCompleted };

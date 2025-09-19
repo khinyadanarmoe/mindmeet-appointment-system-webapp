@@ -1,5 +1,5 @@
 import express from 'express';
-import { registerUser, loginUser , getUserInfo, updateUserProfile, bookAppointment, getUserAppointments, syncSlotsBooked, cancelAppointment, getTherapists} from '../controllers/userController.js';
+import { registerUser, loginUser , getUserInfo, updateUserProfile, bookAppointment, getUserAppointments, syncSlotsBooked, cancelAppointment, getTherapists, markAppointmentCompleted} from '../controllers/userController.js';
 import authUser from '../middlewares/authUser.js';
 import upload from '../middlewares/multer.js';
 
@@ -17,6 +17,9 @@ userRouter.post('/sync-slots-booked', syncSlotsBooked);
 
 // route for cancel appointment
 userRouter.delete('/cancel-appointment', authUser, cancelAppointment);
+
+// Route to mark appointment as completed
+userRouter.post('/mark-appointment-completed', authUser, markAppointmentCompleted);
 
 userRouter.get('/therapists', getTherapists); 
 
