@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  basePath: process.env.NODE_ENV === 'production' ? '/mindmeet/admin' : '',
+  basePath: process.env.NODE_ENV === 'production' ? '/mindmeet' : '',
   images: {
     remotePatterns: [
       {
@@ -12,7 +12,7 @@ const nextConfig = {
     unoptimized: true,
   },
   // Ensure static assets are properly accessible from the base path
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/mindmeet/admin' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/mindmeet' : '',
 };
 
 export default nextConfig;
