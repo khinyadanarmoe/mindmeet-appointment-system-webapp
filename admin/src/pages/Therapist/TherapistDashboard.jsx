@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { TherapistContext } from "../../context/TherapistContext";
+import { TherapistContext } from "../../contexts/TherapistContext";
 import { assets } from "../../assets/assets";
 
 const TherapistDashboard = () => {

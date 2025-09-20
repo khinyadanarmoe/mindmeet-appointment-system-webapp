@@ -1,6 +1,6 @@
 import React from "react";
 import { useContext, useState } from "react";
-import { TherapistContext } from "../../context/TherapistContext";
+import { TherapistContext } from "../../contexts/TherapistContext";
 import { useEffect } from "react";
 
 const TherapistAppointments = () => {

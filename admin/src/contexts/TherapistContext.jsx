@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 
 export const TherapistContext = createContext();
 
-const TherapistContextProvider = (props) => {
+const TherapistContextProvider = ({ children }) => {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const [dToken, setDToken] = React.useState(null);
   const [appointments, setAppointments] = React.useState([]);
@@ -248,7 +248,7 @@ const TherapistContextProvider = (props) => {
 
   return (
     <TherapistContext.Provider value={value}>
-      {props.children}
+      {children}
     </TherapistContext.Provider>
   );
 };

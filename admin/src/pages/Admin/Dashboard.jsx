@@ -1,6 +1,6 @@
 import React from "react";
 import { useContext, useEffect, useState } from "react";
-import { AdminContext } from "../../context/AdminContext";
+import { AdminContext } from "../../contexts/AdminContext";
 
 const Dashboard = () => {
   const {

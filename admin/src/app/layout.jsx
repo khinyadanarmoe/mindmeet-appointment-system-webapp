@@ -1,6 +1,6 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { AdminContextProvider } from "../contexts/AdminContext.jsx";
+import AdminContextProvider from "../contexts/AdminContext.jsx";
 import TherapistContextProvider from "../contexts/TherapistContext.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

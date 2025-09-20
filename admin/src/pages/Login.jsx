@@ -1,8 +1,8 @@
 import React from "react";
 import { useState } from "react";
 import { useContext } from "react";
-import { AdminContext } from "../context/AdminContext";
-import { TherapistContext } from "../context/TherapistContext";
+import { AdminContext } from "../contexts/AdminContext";
+import { TherapistContext } from "../contexts/TherapistContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 

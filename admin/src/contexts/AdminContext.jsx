@@ -4,9 +4,9 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const AdminContext = createContext();
+export const AdminContext = createContext();
 
-export const AdminContextProvider = ({ children }) => {
+const AdminContextProvider = ({ children }) => {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const [aToken, setAToken] = useState(null);
   const [therapists, setTherapists] = useState([]);
@@ -248,4 +248,4 @@ export const useAdminContext = () => {
   return context;
 };
 
-export { AdminContext };
+export default AdminContextProvider;

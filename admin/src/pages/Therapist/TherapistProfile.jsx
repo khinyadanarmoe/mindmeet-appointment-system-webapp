@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { TherapistContext } from "../../context/TherapistContext";
+import { TherapistContext } from "../../contexts/TherapistContext";
 import { assets } from "../../assets/assets";
 import { toast } from "react-toastify";
 
