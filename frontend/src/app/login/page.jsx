@@ -23,37 +23,84 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
       if (state === "Sign Up") {
-        const { data } = await axios.post(`${backendUrl}/user/register`, {
-          name,
-          email,
-          password,
-        });
-        if (data.success && data.token) {
-          setToken(data.token);
-          localStorage.setItem("token", data.token);
-        } else {
-          toast.error(data.message || "Registration failed");
+        // Handle registration
+        const registerUrl = `${backendUrl}/api/user/register`;
+
+        try {
+          const response = await axios.post(registerUrl, {
+            name,
+            email,
+            password,
+          });
+
+          if (response.data.success && response.data.token) {
+            setToken(response.data.token);
+            localStorage.setItem("token", response.data.token);
+            toast.success("Account created successfully!");
+            router.push("/");
+          } else {
+            toast.error(response.data.message || "Registration failed");
+          }
+        } catch (error) {
+          if (error.response) {
+            toast.error(error.response.data.error || "Registration failed");
+          } else if (error.request) {
+            toast.error(
+              "No response from server. Please check your connection."
+            );
+          } else {
+            toast.error("Error processing your request. Please try again.");
+          }
         }
       } else {
-        const { data } = await axios.post(`${backendUrl}/user/login`, {
-          email,
-          password,
-        });
-        if (data.success && data.token) {
-          setToken(data.token);
-          localStorage.setItem("token", data.token);
-          router.push("/");
-        } else {
-          toast.error(data.message || "Login failed");
+        // Handle login
+        const loginUrl = `${backendUrl}/api/user/login`;
+
+        try {
+          const response = await axios.post(loginUrl, {
+            email,
+            password,
+          });
+
+          if (response.data.success && response.data.token) {
+            setToken(response.data.token);
+            localStorage.setItem("token", response.data.token);
+            toast.success("Login successful!");
+            router.push("/");
+          } else {
+            toast.error(response.data.message || "Login failed");
+          }
+        } catch (error) {
+          if (error.response) {
+            toast.error(
+              error.response.data.error || "Invalid email or password"
+            );
+          } else if (error.request) {
+            toast.error(
+              "No response from server. Please check your connection."
+            );
+          } else {
+            toast.error("Error processing your request. Please try again.");
+          }
         }
       }
     } catch (error) {
-      console.error("Authentication error:", error);
-      toast.error("Authentication failed. Please try again.");
+      // More detailed error logging
+      if (error.name === "SyntaxError") {
+        toast.error(
+          "Server returned an invalid response. Please try again later."
+        );
+      } else if (
+        error.name === "TypeError" &&
+        error.message.includes("NetworkError")
+      ) {
+        toast.error(
+          "Network error. Please check your connection to the server."
+        );
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +110,7 @@ const Login = () => {
     if (token) {
       router.push("/");
     }
-  }, [token]);
+  }, [token, router]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex justify-center py-16">

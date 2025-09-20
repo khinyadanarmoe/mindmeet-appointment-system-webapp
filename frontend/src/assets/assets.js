@@ -1,8 +1,8 @@
 // Next.js assets configuration - all images are in public directory
-// Use a function to get the correct path based on environment
+// Function to handle basePath for Azure App Service deployment
 const getAssetPath = (path) => {
-  // In production, assets will be served from the basePath
-  const basePath = process.env.NODE_ENV === 'production' ? '/mindmeet/frontend' : '';
+  // For Azure App Service with basePath '/app/mindmeet'
+  const basePath = process.env.NODE_ENV === 'production' ? '/app/mindmeet' : '';
   return `${basePath}${path}`;
 };
 
@@ -20,22 +20,22 @@ export const assets = {
     about_image: getAssetPath('/about_image.png'),
     menu_icon: getAssetPath('/menu_icon.svg'),
     cross_icon: getAssetPath('/cross_icon.png'),
-    dropdown_icon: '/dropdown_icon.svg',
-    upload_icon: '/upload_icon.png',
-    stripe_logo: '/stripe_logo.png',
-    razorpay_logo: '/razorpay_logo.png',
-    landing_img: '/landing_img.png',
-    title_logo: '/titlelogo.png',
+    dropdown_icon: getAssetPath('/dropdown_icon.svg'),
+    upload_icon: getAssetPath('/upload_icon.png'),
+    stripe_logo: getAssetPath('/stripe_logo.png'),
+    razorpay_logo: getAssetPath('/razorpay_logo.png'),
+    landing_img: getAssetPath('/landing_img.png'),
+    title_logo: getAssetPath('/titlelogo.png'),
 
-    about_bg_img: '/about.png',
+    about_bg_img: getAssetPath('/about.png'),
 
-    clinical_psychology_img: '/clinical-psychology.png',
-    psychiatry_img: '/psychiatrist.png',
-    child_psychology_img: '/behaviour.png',
-    addition_pyschology_img: '/alcohol.png',
-    counseling_img:'/advisory.png',
-    marriage_img: '/marriage.png',
-    behavioral_img: '/mental-disorder.png',
+    clinical_psychology_img: getAssetPath('/clinical-psychology.png'),
+    psychiatry_img: getAssetPath('/psychiatrist.png'),
+    child_psychology_img: getAssetPath('/behaviour.png'),
+    addition_pyschology_img: getAssetPath('/alcohol.png'),
+    counseling_img: getAssetPath('/advisory.png'),
+    marriage_img: getAssetPath('/marriage.png'),
+    behavioral_img: getAssetPath('/mental-disorder.png'),
 
 
 

@@ -9,7 +9,9 @@ export const AppContext = createContext();
 
 const AppContextProvider = (props) => {
   const currencySymbol = "฿";
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const backendUrl =
+    process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000/api";
+
   const [therapists, setTherapists] = useState([]);
   const [token, setToken] = useState("");
   const [userData, setUserData] = useState(null);
@@ -29,21 +31,23 @@ const AppContextProvider = (props) => {
       return;
     }
     try {
-      // Log the full URL for debugging
-      console.log(
-        "Fetching user data from URL:",
-        `${backendUrl}/user/get-user-info`
-      );
-      const { data } = await axios.get(`${backendUrl}/user/get-user-info`, {
-        headers: { token },
+      const userInfoUrl = `${backendUrl}/api/user/get-user-info`;
+
+      const response = await axios.get(userInfoUrl, {
+        headers: {
+          token,
+          "Content-Type": "application/json",
+        },
       });
+
+      const { data } = response;
+
       if (data.success && data.user) {
         setUserData(data.user);
       } else {
         setUserData(null);
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
       toast.error(error.message || "Failed to fetch user data");
       setUserData(null);
     }
@@ -57,30 +61,44 @@ const AppContextProvider = (props) => {
   // Function to fetch therapists data from backend API
   const getTherapistsData = async () => {
     try {
-      // Log the full URL for debugging
-      console.log(
-        "Fetching therapists from URL:",
-        `${backendUrl}/therapist/list`
+      // Add timestamp to avoid potential caching issues
+      const timestamp = new Date().getTime();
+      const response = await axios.get(
+        `${backendUrl}/api/user/therapists?_t=${timestamp}`
       );
-      const { data } = await axios.get(`${backendUrl}/therapist/list`);
+
+      const { data } = response;
       if (data.success) {
         setTherapists(data.therapists);
+
+        // Show success message only when therapists are actually loaded
+        if (data.therapists && data.therapists.length > 0) {
+          // Only show toast on first load, not on refreshes
+          if (!therapists || therapists.length === 0) {
+            toast.success(
+              `Successfully loaded ${data.therapists.length} therapists`
+            );
+          }
+        }
       } else {
-        toast.error(data.message);
-        console.error("Failed to fetch therapists:", data.message);
+        toast.error(data.message || "Failed to fetch therapists");
       }
       return data;
-    } catch (error) {
-      toast.error("Error fetching therapists. Please try again later.");
-      console.error("Error fetching therapists:", error);
-      return { success: false, message: error.message };
-    }
+    } catch (error) {}
   };
 
-  // Fetch therapists when component mounts
+  // Fetch therapists when component mounts or backendUrl changes
   useEffect(() => {
     getTherapistsData();
-  }, []);
+
+    // Set up periodic polling every 5 minutes to keep data fresh
+    const intervalId = setInterval(() => {
+      getTherapistsData();
+    }, 300000); // 5 minutes
+
+    // Clean up interval on unmount
+    return () => clearInterval(intervalId);
+  }, [backendUrl]);
 
   // Function to update user profile
   const updateUserProfile = async (formData) => {
@@ -110,7 +128,6 @@ const AppContextProvider = (props) => {
         return false;
       }
     } catch (error) {
-      console.error("Error updating profile:", error);
       if (error.response && error.response.data && error.response.data.error) {
         toast.error(error.response.data.error);
       } else {
@@ -152,7 +169,6 @@ const AppContextProvider = (props) => {
         return false;
       }
     } catch (error) {
-      console.error("Error booking appointment:", error);
       if (error.response && error.response.data && error.response.data.error) {
         toast.error(error.response.data.error);
       } else {
@@ -231,9 +247,9 @@ const AppContextProvider = (props) => {
                   { appointmentId: appointment._id },
                   { headers: { token } }
                 )
-                .catch((err) =>
-                  console.error("Error marking appointment completed:", err)
-                );
+                .catch(() => {
+                  // Silently handle error for background operation
+                });
             }
           }
           return appointment;
@@ -241,11 +257,9 @@ const AppContextProvider = (props) => {
 
         return updatedAppointments;
       } else {
-        console.error("Failed to fetch appointments:", data.error);
         return [];
       }
     } catch (error) {
-      console.error("Error fetching appointments:", error);
       return [];
     }
   };
@@ -274,7 +288,6 @@ const AppContextProvider = (props) => {
         return false;
       }
     } catch (error) {
-      console.error("Error cancelling appointment:", error);
       if (error.response && error.response.data && error.response.data.error) {
         toast.error(error.response.data.error);
       } else {
