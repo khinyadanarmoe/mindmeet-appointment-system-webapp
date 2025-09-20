@@ -2,8 +2,17 @@
 const nextConfig = {
   basePath: process.env.NODE_ENV === 'production' ? '/mindmeet/frontend' : '',
   images: {
-    domains: ['res.cloudinary.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '**',
+      },
+    ],
+    unoptimized: true,
   },
+  // Ensure static assets are properly accessible from the base path
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/mindmeet/frontend' : '',
 };
 
 export default nextConfig;

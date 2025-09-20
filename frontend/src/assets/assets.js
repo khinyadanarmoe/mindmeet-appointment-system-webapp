@@ -1,18 +1,25 @@
 // Next.js assets configuration - all images are in public directory
+// Use a function to get the correct path based on environment
+const getAssetPath = (path) => {
+  // In production, assets will be served from the basePath
+  const basePath = process.env.NODE_ENV === 'production' ? '/mindmeet/frontend' : '';
+  return `${basePath}${path}`;
+};
+
 export const assets = {
-    appointment_img: '/appointment_img.png',
-    header_img: '/header_img.png',
-    group_profiles: '/group_profiles.png',
-    logo: '/logo.png',
-    chats_icon: '/chats_icon.svg',
-    verified_icon: '/verified_icon.svg',
-    info_icon: '/info_icon.svg',
-    profile_pic: '/profile_pic.png',
-    arrow_icon: '/arrow_icon.svg',
-    contact_image: '/contact_image.png',
-    about_image: '/about_image.png',
-    menu_icon: '/menu_icon.svg',
-    cross_icon: '/cross_icon.png',
+    appointment_img: getAssetPath('/appointment_img.png'),
+    header_img: getAssetPath('/header_img.png'),
+    group_profiles: getAssetPath('/group_profiles.png'),
+    logo: getAssetPath('/logo.png'),
+    chats_icon: getAssetPath('/chats_icon.svg'),
+    verified_icon: getAssetPath('/verified_icon.svg'),
+    info_icon: getAssetPath('/info_icon.svg'),
+    profile_pic: getAssetPath('/profile_pic.png'),
+    arrow_icon: getAssetPath('/arrow_icon.svg'),
+    contact_image: getAssetPath('/contact_image.png'),
+    about_image: getAssetPath('/about_image.png'),
+    menu_icon: getAssetPath('/menu_icon.svg'),
+    cross_icon: getAssetPath('/cross_icon.png'),
     dropdown_icon: '/dropdown_icon.svg',
     upload_icon: '/upload_icon.png',
     stripe_logo: '/stripe_logo.png',
