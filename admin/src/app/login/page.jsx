@@ -26,13 +26,13 @@ const Login = () => {
     }
 
     try {
-      // The backend routes are defined as /api/admin and /api/therapist
+      // Use direct backend URL to avoid basePath issues
+      const directBackendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
       const endpoint =
         state === "Admin" ? "api/admin/login" : "api/therapist/login";
 
       // Construct the full URL correctly with proper slash handling
-      // This assumes backendUrl is https://wad-6612128.eastasia.cloudapp.azure.com
-      const fullUrl = `${backendUrl}/${endpoint}`.replace(/([^:]\/)\/+/g, "$1");
+      const fullUrl = `${directBackendUrl}/${endpoint}`.replace(/([^:]\/)\/+/g, "$1");
 
       const response = await axios.post(fullUrl, {
         email,
