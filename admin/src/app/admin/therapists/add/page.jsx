@@ -96,7 +96,7 @@ const AddTherapist = () => {
       }
 
       const response = await axios.post(
-        backendUrl + "/api/admin/add-therapist",
+        backendUrl + "/admin/add-therapist",
         form,
         {
           headers: {
@@ -336,10 +336,9 @@ const AddTherapist = () => {
                   </label>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  {formData.available 
-                    ? "Therapist will be available for new appointments" 
-                    : "Therapist will be unavailable for new appointments"
-                  }
+                  {formData.available
+                    ? "Therapist will be available for new appointments"
+                    : "Therapist will be unavailable for new appointments"}
                 </p>
               </div>
 
