@@ -51,7 +51,7 @@ const TherapistList = () => {
   const fetchTherapists = async () => {
     setListLoading(true);
     try {
-      const response = await axios.get(backendUrl + "/api/admin/therapists", {
+      const response = await axios.get(backendUrl + "/admin/therapists", {
         headers: {
           token: aToken,
         },

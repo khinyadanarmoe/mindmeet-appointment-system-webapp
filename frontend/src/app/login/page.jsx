@@ -27,7 +27,7 @@ const Login = () => {
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       if (state === "Sign Up") {
-        const { data } = await axios.post(`${backendUrl}/api/user/register`, {
+        const { data } = await axios.post(`${backendUrl}/user/register`, {
           name,
           email,
           password,
@@ -39,7 +39,7 @@ const Login = () => {
           toast.error(data.message || "Registration failed");
         }
       } else {
-        const { data } = await axios.post(`${backendUrl}/api/user/login`, {
+        const { data } = await axios.post(`${backendUrl}/user/login`, {
           email,
           password,
         });

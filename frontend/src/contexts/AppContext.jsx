@@ -29,7 +29,12 @@ const AppContextProvider = (props) => {
       return;
     }
     try {
-      const { data } = await axios.get(`${backendUrl}/api/user/get-user-info`, {
+      // Log the full URL for debugging
+      console.log(
+        "Fetching user data from URL:",
+        `${backendUrl}/user/get-user-info`
+      );
+      const { data } = await axios.get(`${backendUrl}/user/get-user-info`, {
         headers: { token },
       });
       if (data.success && data.user) {
@@ -52,19 +57,23 @@ const AppContextProvider = (props) => {
   // Function to fetch therapists data from backend API
   const getTherapistsData = async () => {
     try {
-      const { data } = await axios.get(`${backendUrl}/api/therapist/list`);
-      if (data.success && data.therapists) {
+      // Log the full URL for debugging
+      console.log(
+        "Fetching therapists from URL:",
+        `${backendUrl}/therapist/list`
+      );
+      const { data } = await axios.get(`${backendUrl}/therapist/list`);
+      if (data.success) {
         setTherapists(data.therapists);
-        return data.therapists;
       } else {
+        toast.error(data.message);
         console.error("Failed to fetch therapists:", data.message);
-        setTherapists([]);
-        return [];
       }
+      return data;
     } catch (error) {
+      toast.error("Error fetching therapists. Please try again later.");
       console.error("Error fetching therapists:", error);
-      setTherapists([]);
-      return [];
+      return { success: false, message: error.message };
     }
   };
 
