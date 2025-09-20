@@ -2,8 +2,8 @@
 const nextConfig = {
   // Only use basePath in production for Azure App Service deployment
   ...(process.env.NODE_ENV === 'production' && {
-    basePath: '/app/portal',
-    assetPrefix: '/app/portal',
+    basePath: '/app/mindmeet/portal',
+    assetPrefix: '/app/mindmeet/portal',
   }),
   
   output: 'standalone',
