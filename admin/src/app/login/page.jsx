@@ -38,7 +38,8 @@ const Login = () => {
         process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
       console.log("DEBUG - directBackendUrl:", directBackendUrl);
 
-      const endpoint = state === "Admin" ? "/admin/login" : "/therapist/login";
+      const endpoint =
+        state === "Admin" ? "api/admin/login" : "api/therapist/login";
 
       // Construct the full URL correctly with proper slash handling
       const fullUrl = `${directBackendUrl}/${endpoint}`.replace(
