@@ -1,11 +1,8 @@
-"use client";
-
 import React from "react";
 import { useState } from "react";
 import { useContext } from "react";
-import { AdminContext } from "../../contexts/AdminContext.jsx";
-import { TherapistContext } from "../../contexts/TherapistContext.jsx";
-import { useRouter } from "next/navigation";
+import { AdminContext } from "../context/AdminContext";
+import { TherapistContext } from "../context/TherapistContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -15,7 +12,6 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const { setAToken, backendUrl } = useContext(AdminContext);
   const { setDToken } = useContext(TherapistContext);
-  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,21 +25,13 @@ const Login = () => {
       console.log("Attempting login:", {
         state,
         email,
+        endpoint:
+          state === "Admin" ? "/api/admin/login" : "/api/therapist/login",
       });
 
-      // Check what the backendUrl actually contains
-      console.log("Backend URL from context:", backendUrl);
-
-      // The backend routes are defined as /api/admin and /api/therapist
       const endpoint =
-        state === "Admin" ? "api/admin/login" : "api/therapist/login";
-
-      // Construct the full URL correctly with proper slash handling
-      // This assumes backendUrl is https://wad-6612128.eastasia.cloudapp.azure.com
-      const fullUrl = `${backendUrl}/${endpoint}`.replace(/([^:]\/)\/+/g, "$1");
-      console.log("Constructed URL:", fullUrl);
-
-      const response = await axios.post(fullUrl, {
+        state === "Admin" ? "/api/admin/login" : "/api/therapist/login";
+      const response = await axios.post(backendUrl + endpoint, {
         email,
         password,
       });
@@ -54,12 +42,10 @@ const Login = () => {
         setAToken(response.data.token);
         localStorage.setItem("aToken", response.data.token);
         toast.success("Admin login successful!");
-        router.push("/admin/dashboard");
-      } else if (state === "Therapist" && response.data.token) {
+      } else if (state === "Doctor" && response.data.token) {
         setDToken(response.data.token);
         localStorage.setItem("dToken", response.data.token);
         toast.success("Therapist login successful!");
-        router.push("/therapist/dashboard");
       } else {
         toast.error(
           response.data.message || "Login failed - no token received"
@@ -86,33 +72,6 @@ const Login = () => {
             Welcome back! Please sign in to your account.
           </p>
         </div>
-
-        {/* Role Toggle */}
-        <div className="mb-6 flex bg-gray-100 p-1 rounded-lg">
-          <button
-            type="button"
-            onClick={() => setState("Admin")}
-            className={`flex-1 py-2 px-4 rounded-lg transition-colors ${
-              state === "Admin"
-                ? "bg-purple-600 text-white"
-                : "text-gray-600 hover:text-gray-800"
-            }`}
-          >
-            Admin
-          </button>
-          <button
-            type="button"
-            onClick={() => setState("Therapist")}
-            className={`flex-1 py-2 px-4 rounded-lg transition-colors ${
-              state === "Therapist"
-                ? "bg-blue-700 text-white"
-                : "text-gray-600 hover:text-gray-800"
-            }`}
-          >
-            Therapist
-          </button>
-        </div>
-
         <form
           className="bg-white shadow-md rounded-lg px-8 py-6"
           onSubmit={handleSubmit}
@@ -153,14 +112,27 @@ const Login = () => {
           </div>
           <button
             type="submit"
-            className={`w-full text-white px-4 py-2 rounded-lg transition-colors ${
-              state === "Admin"
-                ? "bg-purple-500 hover:bg-purple-600"
-                : "bg-blue-700 hover:bg-blue-900"
-            }`}
+            className="w-full bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors"
           >
-            Login as {state}
+            Login
           </button>
+          <div>
+            {state === "Admin" ? (
+              <div
+                className="pl-0 p-4 text-blue-600 cursor-pointer hover:text-blue-800"
+                onClick={() => setState("Doctor")}
+              >
+                Login as Doctor
+              </div>
+            ) : (
+              <div
+                className="pl-0 p-4 text-blue-600 cursor-pointer hover:text-blue-800"
+                onClick={() => setState("Admin")}
+              >
+                Login as Admin
+              </div>
+            )}
+          </div>
         </form>
       </div>
     </div>

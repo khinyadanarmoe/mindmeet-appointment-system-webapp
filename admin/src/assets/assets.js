@@ -2,7 +2,7 @@
 // Use a function to get the correct path based on environment
 const getAssetPath = (path) => {
   // In production, assets will be served from the basePath
-  const basePath = process.env.NODE_ENV === 'production' ? '/mindmeet/admin' : '';
+  const basePath = process.env.NODE_ENV === 'production' ? '/mindmeet' : '';
   return `${basePath}${path}`;
 };
 
