@@ -1,8 +1,8 @@
 // Admin Next.js assets configuration - all images are in public directory
 // Use a function to get the correct path based on environment
 const getAssetPath = (path) => {
-  // In production, assets will be served from the basePath
-  const basePath = process.env.NODE_ENV === 'production' ? '/mindmeet' : '';
+  // For Azure App Service with basePath '/app/portal'
+  const basePath = process.env.NODE_ENV === 'production' ? '/app/portal' : '';
   return `${basePath}${path}`;
 };
 

@@ -26,14 +26,6 @@ const Login = () => {
     }
 
     try {
-      console.log("Attempting login:", {
-        state,
-        email,
-      });
-
-      // Check what the backendUrl actually contains
-      console.log("Backend URL from context:", backendUrl);
-
       // The backend routes are defined as /api/admin and /api/therapist
       const endpoint =
         state === "Admin" ? "api/admin/login" : "api/therapist/login";
@@ -41,14 +33,11 @@ const Login = () => {
       // Construct the full URL correctly with proper slash handling
       // This assumes backendUrl is https://wad-6612128.eastasia.cloudapp.azure.com
       const fullUrl = `${backendUrl}/${endpoint}`.replace(/([^:]\/)\/+/g, "$1");
-      console.log("Constructed URL:", fullUrl);
 
       const response = await axios.post(fullUrl, {
         email,
         password,
       });
-
-      console.log("Login response:", response.data);
 
       if (state === "Admin" && response.data.token) {
         setAToken(response.data.token);
@@ -66,7 +55,6 @@ const Login = () => {
         );
       }
     } catch (error) {
-      console.error("Login error:", error);
       toast.error(
         error.response?.data?.error ||
           error.response?.data?.message ||

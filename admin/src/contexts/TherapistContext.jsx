@@ -38,12 +38,7 @@ const TherapistContextProvider = ({ children }) => {
       });
 
       if (data.success) {
-        console.log("API Response - Therapist Data:", data.therapist);
-
         let email = data.therapist.email;
-
-        console.log("Processed email:", email);
-        console.log("Type of email:", typeof email);
 
         const therapistWithEmail = {
           ...data.therapist,
@@ -57,7 +52,6 @@ const TherapistContextProvider = ({ children }) => {
         return null;
       }
     } catch (error) {
-      console.error("Error fetching therapist profile:", error);
       toast.error("Failed to fetch therapist profile");
       throw error;
     }
@@ -128,9 +122,9 @@ const TherapistContextProvider = ({ children }) => {
                   { appointmentId: appointment._id },
                   { headers: { token: dToken } }
                 )
-                .catch((err) =>
-                  console.error("Error marking appointment completed:", err)
-                );
+                .catch((err) => {
+                  // Silently handle auto-completion errors
+                });
             }
           }
           return appointment;
@@ -143,7 +137,6 @@ const TherapistContextProvider = ({ children }) => {
         return [];
       }
     } catch (error) {
-      console.error("Error fetching appointments:", error);
       toast.error("Failed to fetch appointments");
       throw error;
     }
@@ -171,12 +164,9 @@ const TherapistContextProvider = ({ children }) => {
         return false;
       }
     } catch (error) {
-      console.error("Error updating therapist profile:", error);
-
       // More detailed error message
       let errorMessage = "Failed to update profile";
       if (error.response) {
-        console.error("Error response data:", error.response.data);
         errorMessage = error.response.data.message || errorMessage;
       }
 

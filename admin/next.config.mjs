@@ -1,6 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  basePath: process.env.NODE_ENV === 'production' ? '/mindmeet' : '',
+  // Only use basePath in production for Azure App Service deployment
+  ...(process.env.NODE_ENV === 'production' && {
+    basePath: '/app/portal',
+    assetPrefix: '/app/portal',
+  }),
+  
+  output: 'standalone',
+  trailingSlash: true,
   images: {
     remotePatterns: [
       {
@@ -11,8 +18,6 @@ const nextConfig = {
     ],
     unoptimized: true,
   },
-  // Ensure static assets are properly accessible from the base path
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/mindmeet' : '',
 };
 
 export default nextConfig;

@@ -41,7 +41,6 @@ const AdminContextProvider = ({ children }) => {
         return false;
       }
     } catch (error) {
-      console.error("Login error:", error);
       toast.error(error.response?.data?.message || "Login failed");
       return false;
     }
@@ -66,7 +65,6 @@ const AdminContextProvider = ({ children }) => {
         return data.therapists;
       }
     } catch (error) {
-      console.error("Error fetching therapists:", error);
       toast.error("Failed to fetch therapists");
     }
   };
@@ -89,7 +87,6 @@ const AdminContextProvider = ({ children }) => {
         return false;
       }
     } catch (error) {
-      console.error("Error deleting therapist account:", error);
       toast.error("Failed to delete therapist account");
       return false;
     }
@@ -114,7 +111,6 @@ const AdminContextProvider = ({ children }) => {
         return false;
       }
     } catch (error) {
-      console.error("Error changing availability:", error);
       toast.error("Failed to update availability");
       return false;
     }
@@ -135,7 +131,6 @@ const AdminContextProvider = ({ children }) => {
         return data;
       }
     } catch (error) {
-      console.error("Error fetching dashboard data:", error);
       toast.error("Failed to fetch dashboard data");
     }
   };
@@ -202,9 +197,9 @@ const AdminContextProvider = ({ children }) => {
                   { appointmentId: appointment._id },
                   { headers: { token: aToken } }
                 )
-                .catch((err) =>
-                  console.error("Error marking appointment completed:", err)
-                );
+                .catch((err) => {
+                  // Silently handle auto-completion errors
+                });
             }
           }
           return appointment;
@@ -214,7 +209,6 @@ const AdminContextProvider = ({ children }) => {
         return processedAppointments;
       }
     } catch (error) {
-      console.error("Error fetching appointments:", error);
       toast.error("Failed to fetch appointments");
     }
   };

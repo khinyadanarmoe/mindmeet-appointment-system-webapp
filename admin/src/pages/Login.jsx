@@ -22,21 +22,12 @@ const Login = () => {
     }
 
     try {
-      console.log("Attempting login:", {
-        state,
-        email,
-        endpoint:
-          state === "Admin" ? "/api/admin/login" : "/api/therapist/login",
-      });
-
       const endpoint =
         state === "Admin" ? "/api/admin/login" : "/api/therapist/login";
       const response = await axios.post(backendUrl + endpoint, {
         email,
         password,
       });
-
-      console.log("Login response:", response.data);
 
       if (state === "Admin" && response.data.token) {
         setAToken(response.data.token);
@@ -52,7 +43,6 @@ const Login = () => {
         );
       }
     } catch (error) {
-      console.error("Login error:", error);
       toast.error(
         error.response?.data?.error ||
           error.response?.data?.message ||
