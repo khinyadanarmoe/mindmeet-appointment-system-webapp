@@ -33,7 +33,7 @@ const TherapistContextProvider = ({ children }) => {
   // function to get therapist info
   const getTherapistProfile = async () => {
     try {
-      const { data } = await axios.get(`${backendUrl}/api/therapist/profile`, {
+      const { data } = await axios.get(`${backendUrl}/therapist/profile`, {
         headers: { token: dToken },
       });
 
@@ -97,12 +97,9 @@ const TherapistContextProvider = ({ children }) => {
   // Function to get all appointments and store in state
   const getAllAppointments = async () => {
     try {
-      const { data } = await axios.get(
-        `${backendUrl}/api/therapist/appointments`,
-        {
-          headers: { token: dToken },
-        }
-      );
+      const { data } = await axios.get(`${backendUrl}/therapist/appointments`, {
+        headers: { token: dToken },
+      });
 
       if (data.success) {
         // Check for appointments that should be marked as completed
@@ -118,7 +115,7 @@ const TherapistContextProvider = ({ children }) => {
               // Update in backend
               axios
                 .post(
-                  `${backendUrl}/api/therapist/mark-completed`,
+                  `${backendUrl}/therapist/mark-completed`,
                   { appointmentId: appointment._id },
                   { headers: { token: dToken } }
                 )
@@ -146,7 +143,7 @@ const TherapistContextProvider = ({ children }) => {
   const updateTherapistProfile = async (formData) => {
     try {
       const { data } = await axios.post(
-        `${backendUrl}/api/therapist/update-profile`,
+        `${backendUrl}/therapist/update-profile`,
         formData,
         {
           headers: {
