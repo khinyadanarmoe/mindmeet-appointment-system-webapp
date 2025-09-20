@@ -7,7 +7,8 @@ import { toast } from "react-toastify";
 export const AdminContext = createContext();
 
 const AdminContextProvider = ({ children }) => {
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  // Use direct environment variable to avoid basePath issues
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
   const [aToken, setAToken] = useState(null);
   const [therapists, setTherapists] = useState([]);
   const [appointments, setAppointments] = useState([]);
