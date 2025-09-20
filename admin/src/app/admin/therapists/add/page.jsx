@@ -96,7 +96,7 @@ const AddTherapist = () => {
       }
 
       const response = await axios.post(
-        backendUrl + "/admin/add-therapist",
+        backendUrl + "/api/admin/add-therapist",
         form,
         {
           headers: {
