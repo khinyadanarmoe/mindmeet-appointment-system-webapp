@@ -26,7 +26,7 @@ export const AdminContextProvider = ({ children }) => {
   // Login function
   const loginAdmin = async (email, password) => {
     try {
-      const { data } = await axios.post(`${backendUrl}/admin/login`, {
+      const { data } = await axios.post(`${backendUrl}/api/admin/login`, {
         email,
         password,
       });
@@ -57,7 +57,7 @@ export const AdminContextProvider = ({ children }) => {
   // Get all therapists
   const getAllTherapists = async () => {
     try {
-      const { data } = await axios.get(`${backendUrl}/admin/therapists`, {
+      const { data } = await axios.get(`${backendUrl}/api/admin/therapists`, {
         headers: { token: aToken },
       });
 
@@ -75,7 +75,7 @@ export const AdminContextProvider = ({ children }) => {
   const deleteTherapistAccount = async (therapistId) => {
     try {
       const { data } = await axios.delete(
-        `${backendUrl}/admin/delete-therapist/${therapistId}`,
+        `${backendUrl}/api/admin/delete-therapist/${therapistId}`,
         {
           headers: { token: aToken },
         }
@@ -99,7 +99,7 @@ export const AdminContextProvider = ({ children }) => {
   const changeAvailability = async (therapistId) => {
     try {
       const { data } = await axios.post(
-        `${backendUrl}/admin/change-availability`,
+        `${backendUrl}/api/admin/change-availability`,
         { therapistId },
         {
           headers: { token: aToken },
@@ -123,9 +123,12 @@ export const AdminContextProvider = ({ children }) => {
   // Get dashboard data
   const getDashboardData = async () => {
     try {
-      const { data } = await axios.get(`${backendUrl}/admin/dashboard-data`, {
-        headers: { token: aToken },
-      });
+      const { data } = await axios.get(
+        `${backendUrl}/api/admin/dashboard-data`,
+        {
+          headers: { token: aToken },
+        }
+      );
 
       if (data.success) {
         setDashboardData(data);
@@ -177,7 +180,7 @@ export const AdminContextProvider = ({ children }) => {
   // Get all appointments
   const getAllAppointments = async () => {
     try {
-      const { data } = await axios.get(`${backendUrl}/admin/appointments`, {
+      const { data } = await axios.get(`${backendUrl}/api/admin/appointments`, {
         headers: { token: aToken },
       });
 
@@ -195,7 +198,7 @@ export const AdminContextProvider = ({ children }) => {
               // Update in backend (admin has access to update any appointment)
               axios
                 .post(
-                  `${backendUrl}/admin/mark-appointment-completed`,
+                  `${backendUrl}/api/admin/mark-appointment-completed`,
                   { appointmentId: appointment._id },
                   { headers: { token: aToken } }
                 )

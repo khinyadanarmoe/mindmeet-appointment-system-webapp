@@ -29,13 +29,25 @@ const Login = () => {
       console.log("Attempting login:", {
         state,
         email,
-        endpoint:
-          state === "Admin" ? "/api/admin/login" : "/api/therapist/login",
       });
 
+      // Check what the backendUrl actually contains
+      console.log("Backend URL from context:", backendUrl);
+
+      // The backend routes are defined as /api/admin and /api/therapist
       const endpoint =
-        state === "Admin" ? "/api/admin/login" : "/api/therapist/login";
-      const response = await axios.post(backendUrl + endpoint, {
+        state === "Admin" ? "api/admin/login" : "api/therapist/login";
+
+      // Construct the full URL correctly with proper slash handling
+      // This assumes backendUrl is https://wad-6612128.eastasia.cloudapp.azure.com/mindmeet
+      // and does NOT include the /api part
+      const baseUrl = backendUrl.endsWith("/api")
+        ? backendUrl.substring(0, backendUrl.length - 4)
+        : backendUrl;
+      const fullUrl = `${baseUrl}/${endpoint}`.replace(/([^:]\/)\/+/g, "$1");
+      console.log("Constructed URL:", fullUrl);
+
+      const response = await axios.post(fullUrl, {
         email,
         password,
       });
