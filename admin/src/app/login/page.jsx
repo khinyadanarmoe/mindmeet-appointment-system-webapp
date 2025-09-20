@@ -26,13 +26,20 @@ const Login = () => {
     }
 
     try {
+      // Debug: Check what environment variables are available
+      console.log("DEBUG - NODE_ENV:", process.env.NODE_ENV);
+      console.log("DEBUG - NEXT_PUBLIC_BACKEND_URL:", process.env.NEXT_PUBLIC_BACKEND_URL);
+      
       // Use direct backend URL to avoid basePath issues
       const directBackendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+      console.log("DEBUG - directBackendUrl:", directBackendUrl);
+      
       const endpoint =
         state === "Admin" ? "api/admin/login" : "api/therapist/login";
 
       // Construct the full URL correctly with proper slash handling
       const fullUrl = `${directBackendUrl}/${endpoint}`.replace(/([^:]\/)\/+/g, "$1");
+      console.log("DEBUG - fullUrl:", fullUrl);
 
       const response = await axios.post(fullUrl, {
         email,
