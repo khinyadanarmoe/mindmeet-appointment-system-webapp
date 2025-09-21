@@ -214,7 +214,7 @@ const Login = () => {
               </div>
               {state === "Sign Up" && (
                 <p className="mt-1 text-xs text-gray-500">
-                  Password must be at least 8 characters long
+                  Password must be at least 6 characters long
                 </p>
               )}
             </div>
