@@ -31,7 +31,7 @@ const AppContextProvider = (props) => {
       return;
     }
     try {
-      const userInfoUrl = `${backendUrl}/api/user/get-user-info`;
+      const userInfoUrl = `${backendUrl}/user/get-user-info`;
 
       const response = await axios.get(userInfoUrl, {
         headers: {
@@ -64,22 +64,13 @@ const AppContextProvider = (props) => {
       // Add timestamp to avoid potential caching issues
       const timestamp = new Date().getTime();
       const response = await axios.get(
-        `${backendUrl}/api/user/therapists?_t=${timestamp}`
+        `${backendUrl}/user/therapists?_t=${timestamp}`
       );
 
       const { data } = response;
       if (data.success) {
         setTherapists(data.therapists);
-
-        // Show success message only when therapists are actually loaded
-        if (data.therapists && data.therapists.length > 0) {
-          // Only show toast on first load, not on refreshes
-          if (!therapists || therapists.length === 0) {
-            toast.success(
-              `Successfully loaded ${data.therapists.length} therapists`
-            );
-          }
-        }
+        // Success message has been removed
       } else {
         toast.error(data.message || "Failed to fetch therapists");
       }
@@ -109,7 +100,7 @@ const AppContextProvider = (props) => {
 
     try {
       const { data } = await axios.put(
-        `${backendUrl}/api/user/update-profile`,
+        `${backendUrl}/user/update-profile`,
         formData,
         {
           headers: {
@@ -145,7 +136,7 @@ const AppContextProvider = (props) => {
     }
 
     try {
-      const url = `${backendUrl}/api/user/book-appointment`;
+      const url = `${backendUrl}/user/book-appointment`;
 
       const { data } = await axios.post(
         url,
@@ -222,12 +213,9 @@ const AppContextProvider = (props) => {
     }
 
     try {
-      const { data } = await axios.get(
-        `${backendUrl}/api/user/my-appointments`,
-        {
-          headers: { token },
-        }
-      );
+      const { data } = await axios.get(`${backendUrl}/user/my-appointments`, {
+        headers: { token },
+      });
 
       if (data.success) {
         // Check if any appointments should be marked as completed
@@ -243,7 +231,7 @@ const AppContextProvider = (props) => {
               // Update in backend
               axios
                 .post(
-                  `${backendUrl}/api/user/mark-appointment-completed`,
+                  `${backendUrl}/user/mark-appointment-completed`,
                   { appointmentId: appointment._id },
                   { headers: { token } }
                 )
@@ -271,7 +259,7 @@ const AppContextProvider = (props) => {
     }
 
     try {
-      const url = `${backendUrl}/api/user/cancel-appointment`;
+      const url = `${backendUrl}/user/cancel-appointment`;
 
       const { data } = await axios.delete(url, {
         data: { appointmentId },

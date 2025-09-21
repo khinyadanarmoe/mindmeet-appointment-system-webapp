@@ -25,7 +25,7 @@ const Login = () => {
     try {
       if (state === "Sign Up") {
         // Handle registration
-        const registerUrl = `${backendUrl}/api/user/register`;
+        const registerUrl = `${backendUrl}/user/register`;
 
         try {
           const response = await axios.post(registerUrl, {
@@ -55,7 +55,7 @@ const Login = () => {
         }
       } else {
         // Handle login
-        const loginUrl = `${backendUrl}/api/user/login`;
+        const loginUrl = `${backendUrl}/user/login`;
 
         try {
           const response = await axios.post(loginUrl, {
