@@ -2,12 +2,11 @@ import mongoose from "mongoose";
 
 const connectDB = async () => {
   try {
-    // Extract the base URI without query parameters
-    const baseUri = process.env.MONGODB_URI.split('?')[0];
-    // Add the database name before the query parameters
-    const dbUri = baseUri + '/mindmeet?' + process.env.MONGODB_URI.split('?')[1];
+    // Connect to MongoDB using the URI with database name specified as an option
+    await mongoose.connect(process.env.MONGODB_URI, {
+      dbName: 'mindmeet' // Specify the database name here
+    });
     
-    await mongoose.connect(dbUri);
     console.log("MongoDB connected successfully to mindmeet database");
   } catch (error) {
     console.error("MongoDB connection error:", error);
