@@ -1,11 +1,25 @@
 import express from "express";
 import cors from "cors";
-import  "dotenv/config";
+import "dotenv/config";
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import fs from 'fs';
 import connectDB from "./config/mongodb.js";
 import connectCloudinary from "./config/cloudinary.js";
 import adminRouter from "./routes/adminRoute.js";
 import therapistRouter from "./routes/therapistRoute.js";
 import userRouter from "./routes/userRoute.js";
+
+// Get the directory name
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Create uploads directory if it doesn't exist
+const uploadDir = join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+    console.log('Uploads directory created at:', uploadDir);
+}
 
 
 

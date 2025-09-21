@@ -1,6 +1,7 @@
 import validator from "validator";
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
+import fs from 'fs';
 import userModel from "../models/userModel.js";
 import therapistModel from "../models/therapistModel.js";
 import appointmentModel from "../models/appointmentModel.js";
@@ -214,13 +215,36 @@ const updateUserProfile = async (req, res) => {
     // Handle image upload
     if (image) {
       try {
+        // Log image file details for debugging
+        console.log("Image upload details:", {
+          path: image.path,
+          size: image.size,
+          mimetype: image.mimetype,
+          filename: image.filename
+        });
+        
+        // Verify file exists before uploading to Cloudinary
+        if (!fs.existsSync(image.path)) {
+          console.error("File does not exist at path:", image.path);
+          return res.status(500).json({ error: "Image file not found on server" });
+        }
+        
         const result = await cloudinary.uploader.upload(image.path, {
           resource_type: "image"
         });
+        
+        console.log("Cloudinary upload successful:", {
+          url: result.secure_url,
+          public_id: result.public_id
+        });
+        
         updateData.image = result.secure_url;
       } catch (uploadError) {
         console.error("Error uploading image:", uploadError);
-        return res.status(500).json({ error: "Failed to upload image" });
+        return res.status(500).json({ 
+          error: "Failed to upload image", 
+          details: uploadError.message || "Unknown error" 
+        });
       }
     }
 
