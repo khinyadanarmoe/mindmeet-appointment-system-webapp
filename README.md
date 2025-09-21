@@ -32,8 +32,7 @@
 
 ### 🔧 Main Features
 
-- Browse therapists by name and specialization.
-- Add therapists to a favorites list for quick access.
+- Browse therapists by specialization.
 - Make an appointment with a chosen therapist.
 - Store therapist’s Zoom link for each session.
 - Redirect patients directly to Zoom at appointment time.
